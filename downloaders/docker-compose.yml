@@ -1,0 +1,74 @@
+version: "3.6"
+services:
+  prowlarr: # provide torrents
+    container_name: "prowlarr"
+    image: "lscr.io/linuxserver/prowlarr:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${PROWLARR_CONFIGS}:/config"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  pyload-ng:
+    container_name: "pyload-ng"
+    image: lscr.io/linuxserver/pyload-ng:latest
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${PYLOAD_NG_CONFIGS}/config:/config:rw"
+      - "${PYLOAD_NG_DOWNLOADS}:/downloads:rw"
+    ports:
+      # - 8000:8000
+      - "${PYLOAD_CLICKNLOAD_PORT}:${PYLOAD_CLICKNLOAD_PORT}"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  # jdownloader-2:
+  #   container_name: "jdownloader"
+  #   image: jlesage/jdownloader-2
+  #   env_file: .env
+  #   environment:
+  #     - "PUID=1000"
+  #     - "PGID=1000"
+  #     - "TZ=Asia/Kolkata"
+  #     - "MYJDOWNLOADER_EMAIL=${MYJDOWNLOADER_EMAIL}"
+  #     - "MYJDOWNLOADER_PASSWORD=${MYJDOWNLOADER_PASSWORD}"
+  #     - "MYJDOWNLOADER_DEVICE_NAME=${MYJDOWNLOADER_DEVICE_NAME}"
+  #     - "JDOWNLOADER_HEADLESS=${JDOWNLOADER_HEADLESS}"
+  #   ports:
+  #     - "${JDOWNLOADER_DNS_PORT}:${JDOWNLOADER_DNS_PORT}"
+  #   volumes:
+  #     - "${JDOWNLOADER_CONFIGS}/config:/config:rw"
+  #     - "${JDOWNLOADER_OUTPUT}:/output:rw"
+  #   networks:
+  #     - "global_docker_network"
+  #   restart: unless-stopped
+
+  qflood:
+    container_name: "qflood"
+    image: "cr.hotio.dev/hotio/qbittorrent"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${QFLOOD_DOWNLOADS}:/app/qBittorrent/downloads"
+      - "${QFLOOD_CONFIGS}:/config"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"

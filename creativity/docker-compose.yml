@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  excalidraw:
+    container_name: "excalidraw"
+    build:
+      context: .
+      args:
+        - ${EXCALIDRAW_VERSION} # select any one from https://github.com/excalidraw/excalidraw/tags
+    env_file: .env
+    volumes:
+      - notused:/opt/node_app/app/node_modules
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  wordpress_mysql:
+    container_name: "wordpress_mysql"
+    image: mysql:latest
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${WORDPRESS_MYSQL_DATABASE}
+      MYSQL_RANDOM_ROOT_PASSWORD: ${WORDPRESS_MYSQL_ROOTPASSWD}
+      MYSQL_USER: ${WORDPRESS_MYSQL_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_MYSQL_PASSWD}
+    volumes:
+      - "${WORDPRESS_MYSQL_CONFIGS}/mysql:/var/lib/mysql"
+    networks:
+      - "blog_network"
+    restart: unless-stopped
+
+  wordpress:
+    container_name: "wordpress"
+    image: wordpress:latest
+    env_file: .env
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_MYSQL_HOST}
+      WORDPRESS_DB_NAME: ${WORDPRESS_MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${WORDPRESS_MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_MYSQL_PASSWD}
+    volumes:
+      - "${WORDPRESS_CONFIGS}/html:/var/www/html"
+      - "${WORDPRESS_CONFIGS}/apache2.conf:/etc/apache2/apache2.conf"
+    networks:
+      - "global_docker_network"
+      - "blog_network"
+    restart: unless-stopped
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"
+  blog_network:
+    name: "blog_network"
+
+volumes:
+  notused:

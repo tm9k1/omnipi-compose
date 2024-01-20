@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+
+  docker-hoster:
+    build:
+      context: .
+    container_name: "docker-hoster"
+    volumes:
+      - '/var/run/docker.sock:/tmp/docker.sock'
+      - '/etc/hosts:/tmp/hosts'
+    restart: unless-stopped

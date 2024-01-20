@@ -1,0 +1,47 @@
+version: "3.6"
+services:
+  portainer:
+    container_name: "portainer"
+    image: "portainer/portainer-ce"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${PORTAINER_CONFIGS}:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  # qdirstat:
+  #   container_name: "qdirstat"
+  #   image: jlesage/qdirstat
+  #   env_file: .env
+  #   environment:
+  #     - "PUID=1000"
+  #     - "PGID=1000"
+  #     - "TZ=Asia/Kolkata"
+  #   # ports:
+  #   #   - "5800:5800"
+  #   volumes:
+  #     - "${QDIRSTAT_CONFIGS}:/config:rw"
+  #     - "${QDIRSTAT_STORAGE}:/storage:rw"
+  #   networks:
+  #     - "global_docker_network"
+  #   restart: unless-stopped
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"

@@ -1,0 +1,38 @@
+version: "3.6"
+
+services:
+  organizr:
+    image: organizr/organizr
+    container_name: "organizr"
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Kolkata
+    volumes:
+      -  ${ORGANIZR_CONFIGS}/config:/config
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
+  pihole:
+    container_name: "pihole"
+    image: "pihole/pihole:latest"
+    env_file: .env
+    environment:
+      - "TZ=Asia/Kolkata"
+      - "WEBPASSWORD=${PIHOLE_WEBPASSWORD}"
+    ports:
+      - "${PIHOLE_DNS}:53/tcp"
+      - "${PIHOLE_DNS}:53/udp"
+      - "${PIHOLE_DISCOVERY}:67/udp"
+    volumes:
+      - "${PIHOLE_CONFIGS}/dnsmasq.d:/etc/dnsmasq.d"
+      - "${PIHOLE_CONFIGS}/config:/etc/pihole"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+networks:
+  global_docker_network:
+    name: "global_docker_network"

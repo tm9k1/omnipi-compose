@@ -1,0 +1,66 @@
+{
+	"folders": [
+		{
+			"name": "COMPOSE FILES",
+			"path": "/mnt/hdd/stuff/server/compose-files"
+		},
+		{
+			"name": "CONTAINER CONFIGS",
+			"path": "/etc/container_configs/"
+		},
+		{
+			"name": "NGINX CONFIGS",
+			"path": "/etc/container_configs/reverse_proxy/swag/config/nginx"
+		},
+		{
+			"name": "SCRIPTS",
+			"path": "/home/tm9k1/.scripts/"
+		},
+	],
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Restart compose file",
+				"command": "docker compose down --remove-orphans; sleep 2s; docker compose up -d",
+				"type": "shell",
+				"options": {
+					"cwd": "${fileDirname}"
+				},
+				"presentation": {
+					"reveal": "always"
+				},
+				"group": "build"
+			},			{
+				"label": "Stop compose file",
+				"command": "docker compose down --remove-orphans",
+				"type": "shell",
+				"options": {
+					"cwd": "${fileDirname}"
+				},
+				"presentation": {
+					"reveal": "always"
+				},
+				"group": "build"
+			},
+			{
+				"label": "Refresh reverse proxy confs",
+				"command": "docker exec -it swag nginx -s reload",
+				"type": "shell",
+				"presentation": {
+					"reveal": "always"
+				},
+				"group": "build"
+			},
+			{
+				"label": "Clear container logs (ALL)",
+				"command": "sudo sh -c \"truncate -s 0 /var/lib/docker/containers/**/*-json.log\"",
+				"type": "shell",
+				"presentation": {
+					"reveal": "always"
+				},
+				"group": "build"
+			},
+		]
+	}
+}
