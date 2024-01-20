@@ -1,0 +1,85 @@
+version: "3.6"
+services:
+  wireguard:
+    container_name: "wireguard"
+    image: "lscr.io/linuxserver/wireguard"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+      - "SERVERURL=${WIREGUARD_SERVERURL}"
+      - "SERVERPORT=${WIREGUARD_SERVERPORT}"
+      - "PEERS=${WIREGUARD_PEERS}"
+      - "PEERDNS=auto"
+      - "INTERNAL_SUBNET=${WIREGUARD_INTERNAL_SUBNET}"
+      - "ALLOWEDIPS=${WIREGUARD_ALLOWEDIPS}"
+      - "LOG_CONFS=${WIREGUARD_LOGCONFS}"
+    ports:
+      - "${WIREGUARD_SERVERPORT}:51820/udp"
+    volumes:
+      - "${WIREGUARD_CONFIGS}/config:/config"
+      - "${WIREGUARD_MODULES}:/lib/modules"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: "unless-stopped"
+
+  headscale:
+    container_name: "headscale"
+    image: "headscale/headscale:${HEADSCALE_VERSION}"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+    ports:
+      - "${HEADSCALE_MAIN_SERVERPORT}:8080"
+      - "${HEADSCALE_METRICS_SERVERPORT}:9090"
+    volumes:
+      - "${HEADSCALE_CONFIGS}/config:/etc/headscale"
+    command: headscale serve
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+# tailscale up --login-server https://zeroconf.pi.piyushaggarwal.in --accept-dns=false --advertise-exit-node --advertise-routes=192.168.100.0/24,172.26.0.1/16
+
+  tailscale: 
+    container_name: tailscale 
+    image: tailscale/tailscale:stable 
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+    volumes: 
+      - "${TAILSCALE_CONFIGS}/data:/var/lib" # State data will be stored in this directory
+      - /dev/net/tun:/dev/net/tun # Required for tailscale to work 
+    cap_add: # Required for tailscale to work 
+      - net_admin 
+      - sys_module 
+    privileged: true 
+    command: tailscaled
+    # network_mode: host 
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
+  # headscale-ui:
+  #   container_name: "headscale-ui"
+  #   image: "ghcr.io/gurucomputing/headscale-ui:latest"
+  #   environment:
+  #     - "PUID=1000"
+  #     - "PGID=1000"
+  #     - "TZ=Asia/Kolkata"
+  #   networks:
+  #     - "global_docker_network"
+  #   restart: "unless-stopped"
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"

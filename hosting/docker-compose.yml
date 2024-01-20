@@ -1,0 +1,42 @@
+version: "3.6"
+services:
+  authelia:
+    container_name: "authelia"
+    image: "authelia/authelia:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${AUTHELIA_CONFIGS}:/config"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  swag:
+    container_name: "swag"
+    image: "linuxserver/swag"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+      - "URL=${SWAG_URL}"
+      - "SUBDOMAINS=${SWAG_SUBDOMAINS}"
+      - "DHLEVEL=${SWAG_DHLEVEL}"
+      - "STAGING=false"
+    networks:
+      - "global_docker_network"
+    ports:
+      - "${SWAG_HTTPSPORT}:443/tcp"
+      - "${SWAG_HTTPPORT}:80/tcp"
+    restart: "unless-stopped"
+    volumes:
+      - "${SWAG_CONFIGS}/config:/config"
+      - "${SWAG_CONFIGS}/services_cache:/var/cache/nginx"
+
+networks:
+  global_docker_network:
+    name: "global_docker_network"
+    external: "true"

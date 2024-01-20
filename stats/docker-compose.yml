@@ -1,0 +1,57 @@
+version: "3.6"
+services:
+  grafana:
+    container_name: "grafana"
+    image: "grafana/grafana:latest"
+    user: "1000:100"
+    env_file: .env
+    environment:
+ #     - "PUID=1000"
+ #     - "PGID=1000"  
+      - "TZ=Asia/Kolkata"
+      - "GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}"
+    volumes:
+      - "${GRAFANA_CONFIGS}/config:/var/lib/grafana"
+      - "${GRAFANA_CONFIGS}/defaults.ini:/usr/share/grafana/conf/defaults.ini"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  influxdb:
+    container_name: "influxdb"
+    image: "influxdb:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${INFLUXDB_CONFIGS}:/var/lib/influxdb2"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  telegraf:
+    container_name: "telegraf"
+    image: "telegraf:latest"
+    user: "telegraf:${TELEGRAF_DOCKERGROUP}" # grep "docker" /etc/group and replace this with output
+    env_file: .env
+    environment:
+      - "TZ=Asia/Kolkata"
+    network_mode: "${TELEGRAF_NETWORKMODE}"
+    restart: "unless-stopped"
+    depends_on:
+      - influxdb
+    volumes:
+      - "${TELEGRAF_ROOT}:/hostfs:ro"
+      - "${TELEGRAF_CONFIGS}/rpi-temp:/usr/local/bin/rpi-temp:ro"
+      - "${TELEGRAF_HOSTFILE}:/etc/hosts:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${TELEGRAF_CONFIGS}/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
+      - "${TELEGRAF_CONFIGS}/rpi-freq:/usr/local/bin/rpi-freq:ro"
+      - "${TELEGRAF_CONFIGS}/infinity-pulse:/usr/local/bin/infinity-pulse:ro"
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"

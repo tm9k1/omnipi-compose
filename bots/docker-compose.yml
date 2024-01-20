@@ -1,0 +1,17 @@
+version: '3.6'
+services:
+  jmusicbot:
+    build:
+      dockerfile: jmusicbot.Dockerfile
+      context: .
+    container_name: "jmusicbot"
+    env_file: .env
+    volumes:
+      - "${JMUSICBOT_CONFIGS}/:/opt/"
+    restart: unless-stopped
+    healthcheck:
+      test: "[ `pgrep java` -eq 1 ]"
+      timeout: 10s
+      interval: 1m
+      retries: 3
+      start_period: 10s

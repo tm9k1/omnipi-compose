@@ -1,0 +1,100 @@
+version: "3.6"
+services:
+  jellyfin: # watch content
+    container_name: "jellyfin"
+    image: "linuxserver/jellyfin:latest"
+    devices:
+      - "/dev/dri/renderD128:/dev/dri/renderD128"
+      - "/dev/dri/card0:/dev/dri/card0"
+    group_add:
+      - "122"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${JELLYFIN_CONFIGS}:/config"
+      - "${JELLYFIN_MOVIES}:/data/movies"
+      - "${JELLYFIN_MUSIC}:/data/music"
+      - "${JELLYFIN_TVSHOWS}:/data/tvshows"
+      - "/opt/vc/lib:/opt/vc/lib"
+    # network_mode: host
+    networks:
+      - "global_docker_network"
+      - macvlan
+    restart: "unless-stopped"
+
+  jellyseerr: # request content
+    container_name: jellyseerr
+    image: fallenbagel/jellyseerr:latest
+    env_file: .env
+    environment:
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - ${JELLYSEERR_CONFIGS}:/app/config
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
+  radarr: # movies
+    container_name: "radarr"
+    image: "lscr.io/linuxserver/radarr:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${RADARR_CONFIGS}:/config"
+      - "${RADARR_DOWNLOADS}:/downloads"
+      - "${RADARR_MOVIES}:/movies"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  sonarr: # tv shows
+    container_name: "sonarr"
+    image: "ghcr.io/linuxserver/sonarr:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${SONARR_CONFIGS}/config:/config"
+      - "${SONARR_DOWNLOADS}:/downloads"
+      - "${SONARR_TVSHOWS}:/tv"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  bazarr: # subs
+    container_name: "bazarr"
+    image: "lscr.io/linuxserver/bazarr:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "/etc/container_configs/media_system/bazarr/config:/config"
+      - "${BAZARR_MOVIES}:/movies"
+      - "${BAZARR_TVSHOWS}:/tv"
+    # ports:
+    #   - 6767:6767
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
+networks:
+  macvlan:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.0.0/28
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"
