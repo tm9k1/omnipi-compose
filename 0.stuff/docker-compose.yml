@@ -36,3 +36,5 @@ services:
 networks:
   global_docker_network:
     name: "global_docker_network"
+  backend_network:
+    name: "backend_network"
