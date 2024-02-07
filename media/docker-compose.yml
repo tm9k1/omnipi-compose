@@ -1,5 +1,26 @@
 version: "3.6"
 services:
+  minidlna-desktop:
+    container_name: mini-dlna
+    image: giof71/minidlna
+    env_file: .env
+    user: "1000:100"
+    environment:
+      - "TZ=Asia/Kolkata"
+      - MINIDLNA_ROOT_CONTAINER=V
+      - MINIDLNA_DIR_V_1=/videos/movies
+      - MINIDLNA_DIR_V_2=/videos/tvshows
+      - MINIDLNA_ENABLE_INOTIFY=YES
+      - MINIDLNA_FRIENDLY_NAME=OmniDLNA
+      # - MINIDLNA_FORCE_SORT_CRITERIA=+upnp:class,-dc:date,+upnp:album,+upnp:originalTrackNumber,+dc:title
+    volumes:
+      - "${JELLYFIN_MOVIES}:/videos/movies"
+      - "${JELLYFIN_TVSHOWS}:/videos/tvshows"
+      - ${MINIDLNA_CONFIGS}/log:/log
+      - ${MINIDLNA_CONFIGS}/db:/db
+    network_mode: host
+    restart: unless-stopped
+
   jellyfin: # watch content
     container_name: "jellyfin"
     image: "linuxserver/jellyfin:latest"
@@ -13,6 +34,12 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
+      - JELLYFIN_PublishedServerUrl=192.168.100.140 #DLNA
+    # ports:
+    #   - 8096:8096
+    #   - 7359:7359/udp #DLNA
+    #   - 1900:1900/udp #DLNA-discovery
+
     volumes:
       - "${JELLYFIN_CONFIGS}:/config"
       - "${JELLYFIN_MOVIES}:/data/movies"
@@ -22,7 +49,6 @@ services:
     # network_mode: host
     networks:
       - "global_docker_network"
-      - macvlan
     restart: "unless-stopped"
 
   jellyseerr: # request content
@@ -88,13 +114,6 @@ services:
     restart: unless-stopped
 
 networks:
-  macvlan:
-    driver: macvlan
-    driver_opts:
-      parent: eth0
-    ipam:
-      config:
-        - subnet: 192.168.0.0/28
   global_docker_network:
     external: "true"
     name: "global_docker_network"
