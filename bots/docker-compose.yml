@@ -15,3 +15,9 @@ services:
       interval: 1m
       retries: 3
       start_period: 10s
+    networks:
+      - "backend_network"
+
+networks:
+  backend_network:
+    name: "backend_network"
