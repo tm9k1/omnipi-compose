@@ -65,11 +65,11 @@ services:
     user: 1000:100
     command: [ "start.sh", "immich" ]
     volumes:
-      - ${IMMICH_CONFIGS}/upload:/usr/src/app/upload/upload
-      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
-      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
-      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
-      - ${IMMICH_DATA}:/usr/src/app/upload/library
+      - ${IMMICH_CONFIGS}/upload:/usr/src/app/upload/upload    # store temp uploads in configs dir (TODO: move to cache)
+      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile  # store profile pics in configs dir
+      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video  # store thumbs in cache (SSD)
+      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs  # store thumbs in cache (SSD)
+      - ${IMMICH_DATA}:/usr/src/app/upload/library         # store assets on my HDD
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich_redis
@@ -79,54 +79,53 @@ services:
       - "immich_network"
     restart: "unless-stopped"
 
-  immich-microservices:
-    container_name: "immich_microservices"
-    image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
-    env_file: .env
-    environment:
-      - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
-      - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
-      - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
-      - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
-      - "TZ=Asia/Kolkata"
-    user: 1000:100
-    extends:
-      file: hwaccel.transcoding.yml
-      service: vaapi
-    command: [ "start.sh", "microservices" ]
-    volumes:
-      - ${IMMICH_CONFIGS}/upload:/usr/src/app/upload/upload
-      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
-      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
-      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
-      - ${IMMICH_DATA}:/usr/src/app/upload/library
-      - ${NEXTCLOUD_DATA_TM9K1}:/usr/src/app/nc_dump:ro
-      - /etc/localtime:/etc/localtime:ro
-    depends_on:
-      - immich_redis
-      - immich_postgres
-    networks:
-      - "immich_network"
-    restart: "unless-stopped"
+  # immich-microservices:
+  #   container_name: "immich_microservices"
+  #   image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
+  #   env_file: .env
+  #   environment:
+  #     - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
+  #     - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
+  #     - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
+  #     - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
+  #     - "TZ=Asia/Kolkata"
+  #   user: 1000:100
+  #   extends:
+  #     file: hwaccel.transcoding.yml
+  #     service: vaapi
+  #   command: [ "start.sh", "microservices" ]
+  #   volumes:
+  #     - ${IMMICH_CONFIGS}/upload:/usr/src/app/upload/upload
+  #     - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
+  #     - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
+  #     - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
+  #     - ${IMMICH_DATA}:/usr/src/app/upload/library
+  #     - /etc/localtime:/etc/localtime:ro
+  #   depends_on:
+  #     - immich_redis
+  #     - immich_postgres
+  #   networks:
+  #     - "immich_network"
+  #   restart: "unless-stopped"
 
-  immich-machine-learning:
-    container_name: "immich-machine-learning"
-    # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
-    # Example tag: ${IMMICH_VERSION:-release}-cuda
-    image: "ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}"
-    env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
-    volumes:
-      - model-cache:/cache
-    networks:
-      - "immich_network"
-    restart: "unless-stopped"
-    # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
-      # file: hwaccel.ml.yml
-      # service: cpu # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+  # immich-machine-learning:
+  #   container_name: "immich-machine-learning"
+  #   # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
+  #   # Example tag: ${IMMICH_VERSION:-release}-cuda
+  #   image: "ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}"
+  #   env_file: .env
+  #   environment:
+  #     - "PUID=1000"
+  #     - "PGID=100"
+  #     - "TZ=Asia/Kolkata"
+  #   volumes:
+  #     - model-cache:/cache
+  #   networks:
+  #     - "immich_network"
+  #   restart: "unless-stopped"
+  #   # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
+  #     # file: hwaccel.ml.yml
+  #     # service: cpu # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
 
   immich_postgres:
     container_name: "immich_postgres"
@@ -139,6 +138,8 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
+    ports:
+      - "${IM_POSTGRES_PORT}:5432"
     volumes:
       - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
       - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
@@ -154,6 +155,8 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
+    ports:
+    - "${IM_REDIS_PORT}:6379"
     networks:
       - "immich_network"
     restart: "unless-stopped"
