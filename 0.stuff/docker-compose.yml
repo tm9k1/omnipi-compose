@@ -21,6 +21,7 @@ services:
     env_file: .env
     environment:
       - "TZ=Asia/Kolkata"
+      - "VIRTUAL_HOST=${PIHOLE_VIRTUAL_HOST}"
       - "WEBPASSWORD=${PIHOLE_WEBPASSWORD}"
     ports:
       - "${PIHOLE_DNS}:53/tcp"
