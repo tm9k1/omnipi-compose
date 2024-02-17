@@ -47,25 +47,26 @@ services:
 
 # tailscale up --login-server https://zeroconf.pi.piyushaggarwal.in --accept-dns=false --advertise-exit-node --advertise-routes=192.168.100.0/24,172.26.0.1/16
 
-  tailscale: 
-    container_name: tailscale 
-    image: tailscale/tailscale:stable 
+  tailscale:
+    container_name: tailscale
+    image: tailscale/tailscale:stable
     env_file: .env
     environment:
       - "PUID=1000"
       - "PGID=1000"
       - "TZ=Asia/Kolkata"
-    volumes: 
+    volumes:
       - "${TAILSCALE_CONFIGS}/data:/var/lib" # State data will be stored in this directory
-      - /dev/net/tun:/dev/net/tun # Required for tailscale to work 
-    cap_add: # Required for tailscale to work 
-      - net_admin 
-      - sys_module 
-    privileged: true 
+      - /dev/net/tun:/dev/net/tun # Required for tailscale to work
+      - "/lib/modules:/lib/modules"
+      - "/run/dbus/system_bus_socket:/run/dbus/system_bus_socket" # required for MagicDNS to work
+      - "/etc/resolv.conf:/etc/resolv.conf" # required for MagicDNS to work
+    cap_add: # Required for tailscale to work
+      - net_admin
+      - sys_module
+    privileged: true
     command: tailscaled
-    # network_mode: host 
-    networks:
-      - "global_docker_network"
+    network_mode: host
     restart: unless-stopped
 
   # headscale-ui:
