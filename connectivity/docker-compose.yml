@@ -60,7 +60,8 @@ services:
       - /dev/net/tun:/dev/net/tun # Required for tailscale to work
       - "/lib/modules:/lib/modules"
       - "/run/dbus/system_bus_socket:/run/dbus/system_bus_socket" # required for MagicDNS to work
-      - "/etc/resolv.conf:/etc/resolv.conf" # required for MagicDNS to work
+      # - "/etc/resolv.conf:/etc/resolv.conf" # required for MagicDNS to work
+      # - "/run/systemd/resolve/stub-resolv.conf:/run/systemd/resolve/stub-resolv.conf"
     cap_add: # Required for tailscale to work
       - net_admin
       - sys_module
