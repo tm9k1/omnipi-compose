@@ -79,55 +79,6 @@ services:
       - "immich_network"
     restart: "unless-stopped"
 
-  # immich-microservices:
-  #   container_name: "immich_microservices"
-  #   image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
-  #   env_file: .env
-  #   environment:
-  #     - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
-  #     - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
-  #     - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
-  #     - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
-  #     - "TZ=Asia/Kolkata"
-  #   user: 1000:100
-  #   extends:
-  #     file: hwaccel.transcoding.yml
-  #     service: vaapi
-  #   command: [ "start.sh", "microservices" ]
-  #   volumes:
-  #     - ${IMMICH_CACHE}/upload:/usr/src/app/upload/upload
-  #     - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
-  #     - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
-  #     - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
-  #     - ${IMMICH_DATA}:/usr/src/app/upload/library
-  #     - /mnt/hdd/baadal/nitya/Photos:/usr/src/app/upload/nitya_nc
-  #     - /etc/localtime:/etc/localtime:ro
-  #   depends_on:
-  #     - immich_redis
-  #     - immich_postgres
-  #   networks:
-  #     - "immich_network"
-  #   restart: "unless-stopped"
-
-  # immich-machine-learning:
-  #   container_name: "immich-machine-learning"
-  #   # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
-  #   # Example tag: ${IMMICH_VERSION:-release}-cuda
-  #   image: "ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}"
-  #   env_file: .env
-  #   environment:
-  #     - "PUID=1000"
-  #     - "PGID=100"
-  #     - "TZ=Asia/Kolkata"
-  #   volumes:
-  #     - model-cache:/cache
-  #   networks:
-  #     - "immich_network"
-  #   restart: "unless-stopped"
-  #   # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
-  #     # file: hwaccel.ml.yml
-  #     # service: cpu # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
-
   immich_postgres:
     container_name: "immich_postgres"
     image: "tensorchord/pgvecto-rs:pg14-v0.1.11@sha256:0335a1a22f8c5dd1b697f14f079934f5152eaaa216c09b61e293be285491f8ee"
