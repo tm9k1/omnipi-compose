@@ -21,6 +21,28 @@ services:
     network_mode: host
     restart: unless-stopped
 
+  navidrome:
+    container_name: navidrome
+    image: deluan/navidrome:latest
+    env_file: .env
+    user: "1000:100"
+    # ports:
+      # - "4533:4533"
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info  
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: ${NAVIDROME_BASEURL}
+      ND_LASTFM_APIKEY: ${NAVIDROME_LASTFM_APIKEY}
+      ND_LASTFM_SECRET: ${NAVIDROME_LASTFM_SECRET}
+      ND_JUKEBOX_ENABLED: true
+    volumes:
+      - "${NAVIDROME_CONFIGS}:/data"
+      - "${NAVIDROME_MUSIC}:/music:ro"
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
   jellyfin: # watch content
     container_name: "jellyfin"
     image: "linuxserver/jellyfin:latest"
