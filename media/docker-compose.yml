@@ -22,22 +22,22 @@ services:
     restart: unless-stopped
 
   navidrome:
-    container_name: navidrome
-    image: deluan/navidrome:latest
+    container_name: "navidrome"
+    build:
+      dockerfile: ./Dockerfile.navidrome
+      args:
+        - ${NAVIDROME_VERSION}
     env_file: .env
     user: "1000:100"
-    # ports:
-      # - "4533:4533"
+    group_add:
+        - "${NAVIDROME_AUDIO_GROUP}" # audio group ID (gid) | getent group audio | cut -d: -f3
     environment:
-      ND_SCANSCHEDULE: 1h
-      ND_LOGLEVEL: info  
-      ND_SESSIONTIMEOUT: 24h
-      ND_BASEURL: ${NAVIDROME_BASEURL}
-      ND_LASTFM_APIKEY: ${NAVIDROME_LASTFM_APIKEY}
-      ND_LASTFM_SECRET: ${NAVIDROME_LASTFM_SECRET}
-      ND_JUKEBOX_ENABLED: true
+      ND_CONFIGFILE: "/navidrome.toml"
+    devices:
+      - "/dev/snd:/dev/snd"
     volumes:
-      - "${NAVIDROME_CONFIGS}:/data"
+      - "${NAVIDROME_CONFIGS}/navidrome.toml:/navidrome.toml:ro"
+      - "${NAVIDROME_CONFIGS}/data:/data"
       - "${NAVIDROME_MUSIC}:/music:ro"
     networks:
       - "global_docker_network"
