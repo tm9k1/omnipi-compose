@@ -56,19 +56,15 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
-      - JELLYFIN_PublishedServerUrl=192.168.100.140 #DLNA
+      - "JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHEDSERVERURL}"
     # ports:
     #   - 8096:8096
-    #   - 7359:7359/udp #DLNA
-    #   - 1900:1900/udp #DLNA-discovery
-
     volumes:
       - "${JELLYFIN_CONFIGS}:/config"
       - "${JELLYFIN_MOVIES}:/data/movies"
       - "${JELLYFIN_MUSIC}:/data/music"
       - "${JELLYFIN_TVSHOWS}:/data/tvshows"
       - "/opt/vc/lib:/opt/vc/lib"
-    # network_mode: host
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
