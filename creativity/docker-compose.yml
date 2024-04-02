@@ -4,7 +4,7 @@ services:
   excalidraw:
     container_name: "excalidraw"
     build:
-      context: .
+      dockerfile: Dockerfile.excalidraw
       args:
         - ${EXCALIDRAW_VERSION} # select any one from https://github.com/excalidraw/excalidraw/tags
     env_file: .env
@@ -44,7 +44,7 @@ services:
 
   wordpress:
     container_name: "wordpress"
-    image: wordpress:latest
+    image: wordpress:${WORDPRESS_VERSION}
     env_file: .env
     environment:
       WORDPRESS_DB_HOST: ${WORDPRESS_MYSQL_HOST}
