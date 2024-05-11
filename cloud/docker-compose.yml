@@ -129,9 +129,6 @@ services:
 
 #######################################################
 
-volumes:
-  model-cache:
-
 networks:
   global_docker_network:
     external: "true"
