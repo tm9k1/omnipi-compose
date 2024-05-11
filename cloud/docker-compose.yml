@@ -48,71 +48,6 @@ services:
       - "nextcloud_network"
     restart: "unless-stopped"
 
-#######################################################
-# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-#######################################################
-
-  immich_server:
-    container_name: "immich_server"
-    image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
-    env_file: .env
-    environment:
-      - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
-      - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
-      - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
-      - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
-      - "TZ=Asia/Kolkata"
-    user: 1000:100
-    command: [ "start.sh", "immich" ]
-    volumes:
-      - ${IMMICH_CACHE}/upload:/usr/src/app/upload/upload                 # store temp uploads in configs dir (TODO: move to cache)
-      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile             # store profile pics in configs dir
-      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video   # store thumbs in cache (SSD)
-      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs                 # store thumbs in cache (SSD)
-      - ${IMMICH_DATA}:/usr/src/app/upload/library                        # store assets on my HDD
-      - /etc/localtime:/etc/localtime:ro
-    depends_on:
-      - immich_redis
-      - immich_postgres
-    networks:
-      - "global_docker_network"
-      - "immich_network"
-    restart: "unless-stopped"
-
-  immich_postgres:
-    container_name: "immich_postgres"
-    image: "registry.hub.docker.com/tensorchord/pgvecto-rs:${IM_POSTGRES_VERSION}"
-    env_file: .env
-    environment:
-      - "POSTGRES_PASSWORD=${IM_POSTGRES_PASSWORD}"
-      - "POSTGRES_USER=${IM_POSTGRES_USERNAME}"
-      - "POSTGRES_DB=${IM_POSTGRES_DATABASE_NAME}"
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
-    ports:
-      - "${IM_POSTGRES_PORT}:5432"
-    volumes:
-      - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
-      - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
-    networks:
-      - "immich_network"
-    restart: "unless-stopped"
-
-  immich_redis:
-    container_name: "immich_redis"
-    image: "registry.hub.docker.com/library/redis:${IM_REDIS_VERSION}"
-    env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
-    ports:
-    - "${IM_REDIS_PORT}:6379"
-    networks:
-      - "immich_network"
-    restart: "unless-stopped"
-
   vaultwarden:
     container_name: vaultwarden
     image: vaultwarden/server:latest
@@ -135,5 +70,3 @@ networks:
     name: "global_docker_network"
   nextcloud_network:
     name: "nextcloud_network"
-  immich_network:
-    name: "immich_network"
