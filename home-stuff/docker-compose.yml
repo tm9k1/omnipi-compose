@@ -1,0 +1,19 @@
+services:
+  homeassistant:
+    container_name: "homeassistant"
+    image: "lscr.io/linuxserver/homeassistant:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${HOMEASSISTANT_CONFIGS}:/config"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"
