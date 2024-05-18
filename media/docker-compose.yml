@@ -1,6 +1,6 @@
 version: "3.6"
 services:
-  minidlna-desktop:
+  minidlna-desktop: # for until Jellyfin's DLNA is non-spec
     container_name: mini-dlna
     image: giof71/minidlna
     env_file: .env
@@ -21,24 +21,21 @@ services:
     network_mode: host
     restart: unless-stopped
 
-  navidrome:
+  navidrome: # listen to music
     container_name: "navidrome"
     build:
       dockerfile: ./Dockerfile.navidrome
       args:
         - ${NAVIDROME_VERSION}
     env_file: .env
-    user: "1000:100"
-    group_add:
-        - "${NAVIDROME_AUDIO_GROUP}" # audio group ID (gid) | getent group audio | cut -d: -f3
     environment:
-      ND_CONFIGFILE: "/navidrome.toml"
-    devices:
-      - "/dev/snd:/dev/snd"
+      - "ND_CONFIGFILE=/navidrome.toml"
+      - "XDG_RUNTIME_DIR=/tmp"
     volumes:
       - "${NAVIDROME_CONFIGS}/navidrome.toml:/navidrome.toml:ro"
       - "${NAVIDROME_CONFIGS}/data:/data"
       - "${NAVIDROME_MUSIC}:/music:ro"
+      - "/run/user/${NAVIDROME_HOST_USER_ID}/pulse/native:/tmp/pulse/native"
     networks:
       - "global_docker_network"
     restart: unless-stopped
