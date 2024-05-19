@@ -6,8 +6,6 @@ services:
     user: "1000:100"
     env_file: .env
     environment:
- #     - "PUID=1000"
- #     - "PGID=1000"  
       - "TZ=Asia/Kolkata"
       - "GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}"
     volumes:
@@ -38,10 +36,6 @@ services:
     env_file: .env
     environment:
       - "TZ=Asia/Kolkata"
-    network_mode: "${TELEGRAF_NETWORKMODE}"
-    restart: "unless-stopped"
-    depends_on:
-      - influxdb
     volumes:
       - "${TELEGRAF_ROOT}:/hostfs:ro"
       - "${TELEGRAF_CONFIGS}/rpi-temp:/usr/local/bin/rpi-temp:ro"
@@ -50,6 +44,10 @@ services:
       - "${TELEGRAF_CONFIGS}/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
       - "${TELEGRAF_CONFIGS}/rpi-freq:/usr/local/bin/rpi-freq:ro"
       - "${TELEGRAF_CONFIGS}/infinity-pulse:/usr/local/bin/infinity-pulse:ro"
+    depends_on:
+      - influxdb
+    network_mode: "host"
+    restart: "unless-stopped"
 
 networks:
   global_docker_network:

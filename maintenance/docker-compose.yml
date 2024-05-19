@@ -24,23 +24,6 @@ services:
       - "global_docker_network"
     restart: "unless-stopped"
 
-  # qdirstat:
-  #   container_name: "qdirstat"
-  #   image: jlesage/qdirstat
-  #   env_file: .env
-  #   environment:
-  #     - "PUID=1000"
-  #     - "PGID=1000"
-  #     - "TZ=Asia/Kolkata"
-  #   # ports:
-  #   #   - "5800:5800"
-  #   volumes:
-  #     - "${QDIRSTAT_CONFIGS}:/config:rw"
-  #     - "${QDIRSTAT_STORAGE}:/storage:rw"
-  #   networks:
-  #     - "global_docker_network"
-  #   restart: unless-stopped
-
 networks:
   global_docker_network:
     external: "true"

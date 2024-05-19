@@ -1,7 +1,7 @@
 version: "3.6"
 
 services:
-  organizr:
+  organizr: # Landing page
     image: organizr/organizr
     container_name: "organizr"
     env_file: .env
@@ -15,7 +15,7 @@ services:
       - "global_docker_network"
     restart: unless-stopped
 
-  pihole:
+  pihole: # Adblock
     container_name: "pihole"
     image: "pihole/pihole:latest"
     env_file: .env

@@ -10,9 +10,8 @@ services:
       - MINIDLNA_ROOT_CONTAINER=V
       - MINIDLNA_DIR_V_1=/videos/movies
       - MINIDLNA_DIR_V_2=/videos/tvshows
-      - MINIDLNA_ENABLE_INOTIFY=YES
-      - MINIDLNA_FRIENDLY_NAME=OmniDLNA
-      # - MINIDLNA_FORCE_SORT_CRITERIA=+upnp:class,-dc:date,+upnp:album,+upnp:originalTrackNumber,+dc:title
+      - MINIDLNA_ENABLE_INOTIFY=${MINIDLNA_ENABLE_INOTIFY}
+      - MINIDLNA_FRIENDLY_NAME=${MINIDLNA_NAME}
     volumes:
       - "${JELLYFIN_MOVIES}:/videos/movies"
       - "${JELLYFIN_TVSHOWS}:/videos/tvshows"
@@ -54,8 +53,6 @@ services:
       - "PGID=100"
       - "TZ=Asia/Kolkata"
       - "JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHEDSERVERURL}"
-    # ports:
-    #   - 8096:8096
     volumes:
       - "${JELLYFIN_CONFIGS}:/config"
       - "${JELLYFIN_MOVIES}:/data/movies"
@@ -122,8 +119,6 @@ services:
       - "/etc/container_configs/media_system/bazarr/config:/config"
       - "${BAZARR_MOVIES}:/movies"
       - "${BAZARR_TVSHOWS}:/tv"
-    # ports:
-    #   - 6767:6767
     networks:
       - "global_docker_network"
     restart: unless-stopped

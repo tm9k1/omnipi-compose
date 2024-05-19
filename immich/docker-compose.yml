@@ -1,9 +1,9 @@
 version: "3.6"
 services:
 
-#######################################################
+##################################################################################
 # https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-#######################################################
+##################################################################################
 
   immich_server:
     container_name: "immich_server"
@@ -18,11 +18,11 @@ services:
     user: 1000:100
     command: [ "start.sh", "immich" ]
     volumes:
-      - ${IMMICH_CACHE}/upload:/usr/src/app/upload/upload                 # store temp uploads in configs dir (TODO: move to cache)
-      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile             # store profile pics in configs dir
-      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video   # store thumbs in cache (SSD)
-      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs                 # store thumbs in cache (SSD)
-      - ${IMMICH_DATA}:/usr/src/app/upload/library                        # store assets on my HDD
+      - ${IMMICH_CACHE}/upload:/usr/src/app/upload/upload
+      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
+      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
+      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
+      - ${IMMICH_DATA}:/usr/src/app/upload/library
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich_redis

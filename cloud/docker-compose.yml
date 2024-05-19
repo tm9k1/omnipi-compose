@@ -1,6 +1,6 @@
 version: "3.6"
 services:
-  nextcloud:
+  nextcloud: # For Google Drive shit
     container_name: "nextcloud"
     image: "linuxserver/nextcloud:latest"
     env_file: .env
@@ -61,7 +61,6 @@ services:
       - "${DATA1_PATH}:/data1"
       - "${DATA2_PATH}:/data2"
     ports:
-      # - "8384:8384"
       - "22000:22000/tcp"
       - "22000:22000/udp"
       - "21027:21027/udp"

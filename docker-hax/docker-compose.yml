@@ -1,7 +1,7 @@
 version: '3.3'
 services:
 
-  docker-hoster:
+  docker-hoster: # for contacting containers from host wihtout IP
     build:
       context: .
     container_name: "docker-hoster"

@@ -26,15 +26,15 @@ services:
       - "SUBDOMAINS=${SWAG_SUBDOMAINS}"
       - "DHLEVEL=${SWAG_DHLEVEL}"
       - "STAGING=false"
-    networks:
-      - "global_docker_network"
-    ports:
-      - "${SWAG_HTTPSPORT}:443/tcp"
-      - "${SWAG_HTTPPORT}:80/tcp"
-    restart: "unless-stopped"
     volumes:
       - "${SWAG_CONFIGS}/config:/config"
       - "${SWAG_CONFIGS}/services_cache:/var/cache/nginx"
+    ports:
+      - "${SWAG_HTTPSPORT}:443/tcp"
+      - "${SWAG_HTTPPORT}:80/tcp"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
 
 networks:
   global_docker_network:
