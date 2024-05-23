@@ -60,10 +60,11 @@ services:
       - "${SYNCTHING_CONFIGS}/config:/config"
       - "${DATA1_PATH}:/data1"
       - "${DATA2_PATH}:/data2"
+      - "${DATA3_PATH}:/data3"
     ports:
-      - "22000:22000/tcp"
-      - "22000:22000/udp"
-      - "21027:21027/udp"
+      - "${SYNCTHING_DATA_PORT}:22000/tcp"
+      - "${SYNCTHING_DATA_PORT}:22000/udp"
+      - "${SYNCTHING_LOCAL_DISCOVERY_PORT}:21027/udp"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
