@@ -61,7 +61,7 @@ services:
       - "PGID=100"
       - "TZ=Asia/Kolkata"
     ports:
-    - "${IM_REDIS_PORT}:6379"
+      - "${IM_REDIS_PORT}:6379"
     networks:
       - "immich_network"
     restart: "unless-stopped"
