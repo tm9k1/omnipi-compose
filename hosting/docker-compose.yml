@@ -34,9 +34,14 @@ services:
       - "${SWAG_HTTPPORT}:80/tcp"
     networks:
       - "global_docker_network"
+      - "cineris"
     restart: "unless-stopped"
 
 networks:
   global_docker_network:
     name: "global_docker_network"
     external: "true"
+  cineris:
+    external: "true"
+    name: "cineris"
+    driver: overlay
