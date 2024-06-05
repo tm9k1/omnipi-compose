@@ -8,8 +8,6 @@ services:
       args:
         - ${EXCALIDRAW_VERSION} # select any one from https://github.com/excalidraw/excalidraw/tags
     env_file: .env
-    volumes:
-      - notused:/opt/node_app/app/node_modules
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
@@ -22,8 +20,6 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
-    volumes:
-      - draw-io_notused:/opt/node_app/app/node_modules
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
@@ -67,6 +63,3 @@ networks:
   blog_network:
     name: "blog_network"
 
-volumes:
-  notused:
-  draw-io_notused:
