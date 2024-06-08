@@ -1,18 +1,18 @@
 version: "3.6"
 services:
-  prowlarr: # provide torrents
-    container_name: "prowlarr"
-    image: "lscr.io/linuxserver/prowlarr:latest"
-    env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=1000"
-      - "TZ=Asia/Kolkata"
-    volumes:
-      - "${PROWLARR_CONFIGS}:/config"
-    networks:
-      - "global_docker_network"
-    restart: "unless-stopped"
+#  prowlarr: # provide torrents
+#    container_name: "prowlarr"
+#    image: "lscr.io/linuxserver/prowlarr:latest"
+#    env_file: .env
+#    environment:
+#      - "PUID=1000"
+#      - "PGID=1000"
+#      - "TZ=Asia/Kolkata"
+#    volumes:
+#      - "${PROWLARR_CONFIGS}:/config"
+#    networks:
+#      - "global_docker_network"
+#    restart: "unless-stopped"
 
   pyload-ng: # download via http
     container_name: "pyload-ng"

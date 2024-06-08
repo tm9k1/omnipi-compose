@@ -1,0 +1,13 @@
+FROM nginx:1.21-alpine
+ARG VERSION
+RUN apk update
+RUN apk add wget unzip
+WORKDIR /opt
+RUN wget https://github.com/Stremio/stremio-web/releases/latest/download/stremio-web.zip
+RUN pwd
+RUN unzip stremio-web.zip
+RUN ls -al /opt/build
+RUN cp -r /opt/build/* /usr/share/nginx/html
+RUN ls /usr/share/nginx/html
+
+HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
