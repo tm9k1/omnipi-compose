@@ -34,7 +34,6 @@ services:
       - "${SWAG_HTTPPORT}:80/tcp"
     networks:
       - "global_docker_network"
-      - "cineris"
     restart: "unless-stopped"
 
 networks:
