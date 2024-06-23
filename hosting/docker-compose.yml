@@ -40,7 +40,4 @@ networks:
   global_docker_network:
     name: "global_docker_network"
     external: "true"
-  cineris:
-    external: "true"
-    name: "cineris"
-    driver: overlay
+

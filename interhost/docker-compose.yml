@@ -1,0 +1,27 @@
+version: "3.6"
+services:
+  interhost_proxy:
+    container_name: "interhost_proxy"
+    image: "nginx"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${INTERHOST_PROXY_CONFIGS}/conf.d/prowlarr.subdomain.conf:/etc/nginx/conf.d/prowlarr.subdomain.conf:ro"
+      - "${INTERHOST_PROXY_CONFIGS}/proxy.conf:/etc/nginx/proxy.conf:ro"
+      - "${INTERHOST_PROXY_CONFIGS}/resolver.conf:/etc/nginx/resolver.conf:ro"
+    networks:
+      - global_docker_network
+      - cineris
+    restart: "unless-stopped"
+
+networks:
+  global_docker_network:
+    name: "global_docker_network"
+    external: "true"
+  cineris:
+    name: "cineris"
+    driver: overlay
+    external: "true"
