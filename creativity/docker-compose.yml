@@ -8,6 +8,10 @@ services:
       args:
         - ${EXCALIDRAW_VERSION} # select any one from https://github.com/excalidraw/excalidraw/tags
     env_file: .env
+    environment:
+      PUID: 1000
+      PGID: 100
+      TZ: Asia/Kolkata
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
@@ -17,9 +21,9 @@ services:
     image: "jgraph/drawio:${DRAW_IO_VERSION}" # select any one from https://hub.docker.com/r/jgraph/drawio/tags
     env_file: .env
     environment:
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
+      PUID: 1000
+      PGID: 100
+      TZ: Asia/Kolkata
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
@@ -29,12 +33,12 @@ services:
     image: mysql:latest
     env_file: .env
     environment:
-      - "MYSQL_DATABASE=${WORDPRESS_MYSQL_DATABASE}"
-      - "MYSQL_RANDOM_ROOT_PASSWORD=${WORDPRESS_MYSQL_ROOTPASSWD}"
-      - "MYSQL_USER=${WORDPRESS_MYSQL_USER}"
-      - "MYSQL_PASSWORD=${WORDPRESS_MYSQL_PASSWD}"
+      MYSQL_DATABASE: ${WORDPRESS_MYSQL_DATABASE}
+      MYSQL_RANDOM_ROOT_PASSWORD: ${WORDPRESS_MYSQL_ROOTPASSWD}
+      MYSQL_USER: ${WORDPRESS_MYSQL_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_MYSQL_PASSWD}
     volumes:
-      - "${WORDPRESS_MYSQL_CONFIGS}/mysql:/var/lib/mysql"
+      - "${WORDPRESS_MYSQL_CONFIGS}:/var/lib/mysql"
     networks:
       - "blog_network"
     restart: unless-stopped
@@ -54,6 +58,23 @@ services:
     networks:
       - "global_docker_network"
       - "blog_network"
+    restart: unless-stopped
+
+  couchdb:
+    image: couchdb:latest
+    container_name: obsidian-livesync
+    user: 1000:100
+    env_file: .env
+    environment:
+      COUCHDB_USER: ${OBSIDIAN_USER}
+      COUCHDB_PASSWORD: ${OBSIDIAN_PASSWORD}
+    volumes:
+      - ${OBSIDIAN_CONFIGS}/data:/opt/couchdb/data
+      - ${OBSIDIAN_CONFIGS}/local.ini:/opt/couchdb/etc/local.ini
+    #ports:
+    #  - 5984:5984
+    networks:
+      - global_docker_network
     restart: unless-stopped
 
 networks:
