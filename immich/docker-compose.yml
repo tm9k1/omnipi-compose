@@ -10,13 +10,13 @@ services:
     image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
     env_file: .env
     environment:
-      - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
-      - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
-      - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
-      - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
-      - "TZ=Asia/Kolkata"
+      DB_USERNAME: ${IM_POSTGRES_USERNAME}
+      DB_PASSWORD: ${IM_POSTGRES_PASSWORD}
+      DB_DATABASE_NAME: ${IM_POSTGRES_DATABASE_NAME}
+      DB_HOSTNAME: ${IM_POSTGRES_HOSTNAME}
+      TZ: 'Asia/Kolkata'
+      IMMICH_WORKERS_INCLUDE: 'api'
     user: 1000:100
-    command: [ "start.sh", "immich" ]
     volumes:
       - ${IMMICH_CACHE}/upload:/usr/src/app/upload/upload
       - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
@@ -60,6 +60,8 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
+    healthcheck:
+      test: redis-cli ping || exit 1
     ports:
       - "${IM_REDIS_PORT}:6379"
     networks:
