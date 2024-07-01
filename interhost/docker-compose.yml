@@ -25,4 +25,3 @@ networks:
   interplanetary_docker_network:
     name: "interplanetary_docker_network"
     driver: overlay
-    external: "true"
