@@ -18,13 +18,21 @@ services:
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest
+    environment:
+      DOZZLE_HOSTNAME: ${DOZZLE_HOSTNAME}
+      DOZZLE_REMOTE_HOST: ${DOZZLE_REMOTE_HOST}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - "global_docker_network"
+      - "interplanetary_docker_network"
     restart: "unless-stopped"
 
 networks:
   global_docker_network:
     external: "true"
     name: "global_docker_network"
+  interplanetary_docker_network:
+    name: "interplanetary_docker_network"
+    driver: overlay
+    external: "true"
