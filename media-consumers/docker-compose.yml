@@ -35,7 +35,18 @@ services:
     network_mode: host
     restart: unless-stopped
 
-  navidrome: # listen to music
+  feishin: # listen to music
+    container_name: "feishin"
+    image: ghcr.io/jeffvli/feishin:latest
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
+  navidrome: # organize/ provide music
     container_name: "navidrome"
     build:
       dockerfile: ./Dockerfile.navidrome
