@@ -1,5 +1,20 @@
 version: "3.6"
 services:
+  stremio-web:
+    container_name: "stremio-web"
+    build:
+      dockerfile: ./Dockerfile.stremio-web
+      args:
+        - ${STREMIO_WEB_VERSION}
+    env_file: .env
+    ports:
+      - "8181:80"
+    environment:
+      - "TZ=Asia/Kolkata"
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
   minidlna-desktop: # for until Jellyfin's DLNA is non-spec
     container_name: mini-dlna
     image: giof71/minidlna
@@ -75,62 +90,7 @@ services:
       - "global_docker_network"
     restart: unless-stopped
 
-  radarr: # movies
-    container_name: "radarr"
-    image: "lscr.io/linuxserver/radarr:latest"
-    env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
-    volumes:
-      - "${RADARR_CONFIGS}:/config"
-      - "${RADARR_DOWNLOADS}:/downloads"
-      - "${RADARR_MOVIES}:/movies"
-    networks:
-      - "global_docker_network"
-      - "cineris"
-    restart: "unless-stopped"
-
-  sonarr: # tv shows
-    container_name: "sonarr"
-    image: "ghcr.io/linuxserver/sonarr:latest"
-    env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
-    volumes:
-      - "${SONARR_CONFIGS}/config:/config"
-      - "${SONARR_DOWNLOADS}:/downloads"
-      - "${SONARR_TVSHOWS}:/tv"
-    networks:
-      - "global_docker_network"
-      - "cineris"
-    restart: "unless-stopped"
-
-  bazarr: # subs
-    container_name: "bazarr"
-    image: "lscr.io/linuxserver/bazarr:latest"
-    env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=1000"
-      - "TZ=Asia/Kolkata"
-    volumes:
-      - "/etc/container_configs/media_system/bazarr/config:/config"
-      - "${BAZARR_MOVIES}:/movies"
-      - "${BAZARR_TVSHOWS}:/tv"
-    networks:
-      - "global_docker_network"
-      - "cineris"
-    restart: unless-stopped
-
 networks:
   global_docker_network:
     external: "true"
     name: "global_docker_network"
-  cineris:
-    external: "true"
-    name: "cineris"
-    driver: overlay
