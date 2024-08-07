@@ -1,0 +1,82 @@
+version: "3.8"
+
+#
+# WARNING: Make sure to use the docker-compose.yml of the current release:
+#
+# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+#
+# The compose file on main may not be compatible with the latest release.
+#
+
+name: immich-heavylifting
+
+services:
+  immich_machine_learning:
+    container_name: "immich_machine_learning"
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
+      file: hwaccel.ml.yml
+      service: openvino # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+    ports:
+    - "3003:3003"
+    volumes:
+      - model-cache:/cache
+    env_file:
+      - .env
+    restart: always
+
+  immich_microservices:
+    container_name: "immich_microservices"
+    image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
+    env_file: .env
+    environment:
+      DB_USERNAME: ${IM_POSTGRES_USERNAME}
+      DB_PASSWORD: ${IM_POSTGRES_PASSWORD}
+      DB_DATABASE_NAME: ${IM_POSTGRES_DATABASE_NAME}
+      DB_HOSTNAME: ${IM_POSTGRES_HOSTNAME}
+      TZ: 'Asia/Kolkata'
+      IMMICH_WORKERS_EXCLUDE: 'api'
+    user: 1000:100
+    extends:
+      file: hwaccel.transcoding.yml
+      service: vaapi
+    volumes:
+      - immich-configs-upload:/usr/src/app/upload/upload
+      - immich-configs-profile:/usr/src/app/upload/profile
+      - immich-cache-encoded-video:/usr/src/app/upload/encoded-video
+      - immich-cache-thumbs:/usr/src/app/upload/thumbs
+      - immich-data:/usr/src/app/upload/library
+    restart: "unless-stopped"
+
+volumes:
+  model-cache:
+  immich-configs-upload:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//requiem/etc/container_configs/cache/immich/upload"
+      o: "username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
+  immich-configs-profile:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//requiem/etc/container_configs/immich/immich_server/profile"
+      o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
+  immich-cache-encoded-video:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//requiem/etc/container_configs/cache/immich/encoded-video"
+      o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
+  immich-cache-thumbs:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//requiem/etc/container_configs/cache/immich/thumbs"
+      o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
+  immich-data:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//requiem/hdd/media/images"
+      o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"

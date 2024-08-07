@@ -62,6 +62,7 @@ services:
       - "${DATA2_PATH}:/data2"
       - "${DATA3_PATH}:/data3"
       - "${DATA4_PATH}:/data4"
+      - "${DATA5_PATH}:/data5"
     ports:
       - "${SYNCTHING_DATA_PORT}:22000/tcp"
       - "${SYNCTHING_DATA_PORT}:22000/udp"

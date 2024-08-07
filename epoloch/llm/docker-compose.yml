@@ -1,0 +1,48 @@
+# Hosting my own version of ChatGPT with a text-modal LLM
+
+services:
+  open-webui:
+    container_name: "open-webui"
+    image: "ghcr.io/open-webui/open-webui:main"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+      - "OLLAMA_API_BASE_URL=${OLLAMA_BASE_URL}/api"
+      - "WEBUI_NAME=${_CUSTOM_NAME}"
+      - "WEBUI_URL=${_WEBUI_URL}"
+      - "ENABLE_SIGNUP=${_ENABLE_SIGNUP}"
+    volumes:
+      - "open-webui:/app/backend/data"
+    ports:
+      -  "3000:8080"
+    networks:
+      - "interplanetary_docker_network"
+      - "llm_network"
+    restart: unless-stopped
+
+  ollama:
+    container_name: "ollama"
+    image: "ollama/ollama"
+    env_file: .env
+    environment:
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "ollama:/root/.ollama"
+    networks:
+      - "llm_network"
+    restart: unless-stopped
+
+
+volumes:
+  open-webui:
+  ollama:
+
+networks:
+  llm_network:
+    name: "llm_network"
+  interplanetary_docker_network:
+    name: "interplanetary_docker_network"
+    driver: overlay
+    external: "true"

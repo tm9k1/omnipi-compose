@@ -1,5 +1,5 @@
 # OmniPi Compose
-Dockerfiles and compose files for my RPi4 server.
 
+Dockerfiles and compose files for all of my servers.
 
-NOTE: `.env` files not included in the repo for security/ privacy reasons.
+> NOTE: `.env` files not included.

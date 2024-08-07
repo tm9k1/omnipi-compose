@@ -1,0 +1,38 @@
+services:
+  epoloch-docker-socket:
+    container_name: epoloch-docker-socket
+    image: tecnativa/docker-socket-proxy
+    privileged: true
+    environment:
+      - BUILD=1
+      - COMMIT=1
+      - CONFIGS=1
+      - CONTAINERS=1
+      - ALLOW_START=1
+      - ALLOW_STOP=1
+      - ALLOW_RESTARTS=1
+      - DISTRIBUTION=1
+      - EXEC=1
+      - GRPC=1
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1
+      - NODES=1
+      - PLUGINS=1
+      - SERVICES=1
+      - SESSION=1
+      - SWARM=1
+      - SYSTEM=1
+      - TASKS=1
+      - VOLUMES=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - "interplanetary_docker_network"
+    restart: "unless-stopped"
+
+networks:
+  interplanetary_docker_network:
+    name: "interplanetary_docker_network"
+    driver: overlay
+    external: "true"

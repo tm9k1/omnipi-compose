@@ -1,0 +1,28 @@
+services:
+  prowlarr: # provide torrents
+    container_name: "prowlarr"
+    image: "lscr.io/linuxserver/prowlarr:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Asia/Kolkata"
+    # ports:
+    #   - "9696:9696"
+    volumes:
+      - "${PROWLARR_CONFIGS}:/config"
+    networks:
+      - "cineris"
+      - "interplanetary_docker_network"
+    restart: "unless-stopped"
+
+
+networks:
+  cineris:
+    name: "cineris"
+    driver: overlay
+    external: "true"
+  interplanetary_docker_network:
+    name: "interplanetary_docker_network"
+    driver: overlay
+
