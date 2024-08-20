@@ -69,8 +69,9 @@ services:
     container_name: "jellyfin"
     image: "linuxserver/jellyfin:latest"
     devices:
-      - "/dev/dri/renderD128:/dev/dri/renderD128"
-      - "/dev/dri/card0:/dev/dri/card0"
+      - "/dev/video10:/dev/video10"
+      - "/dev/video11:/dev/video11"
+      - "/dev/video12:/dev/video12"
     group_add:
       - "122"
     env_file: .env
