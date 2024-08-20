@@ -30,7 +30,7 @@ services:
 
   wordpress_mysql:
     container_name: "wordpress_mysql"
-    image: mysql:latest
+    image: mysql:lts
     env_file: .env
     environment:
       MYSQL_DATABASE: ${WORDPRESS_MYSQL_DATABASE}
