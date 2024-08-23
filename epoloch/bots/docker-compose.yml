@@ -7,8 +7,10 @@ services:
       context: .
     container_name: "jmusicbot"
     env_file: .env
+    user: 1000:100
     volumes:
       - "${JMUSICBOT_CONFIGS}/:/opt/"
+      - "${JMUSICBOT_LOCAL}:/opt/music"
     restart: unless-stopped
     healthcheck:
       test: "[ `pgrep java` -eq 1 ]"
