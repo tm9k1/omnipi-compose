@@ -34,7 +34,6 @@ services:
       - "llm_network"
     restart: unless-stopped
 
-
 volumes:
   open-webui:
   ollama:

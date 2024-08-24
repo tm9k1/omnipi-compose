@@ -58,7 +58,6 @@ services:
       - "${BAZARR_TVSHOWS}:/tv"
     networks:
       - "global_docker_network"
-      - "cineris"
     restart: unless-stopped
 
 networks:

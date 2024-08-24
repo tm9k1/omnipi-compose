@@ -12,17 +12,11 @@ services:
     volumes:
       - "${PROWLARR_CONFIGS}:/config"
     networks:
-      - "cineris"
       - "interplanetary_docker_network"
     restart: "unless-stopped"
 
-
 networks:
-  cineris:
-    name: "cineris"
-    driver: overlay
-    external: "true"
   interplanetary_docker_network:
     name: "interplanetary_docker_network"
     driver: overlay
-
+    external: true
