@@ -30,6 +30,7 @@ services:
     networks:
       - "global_docker_network"
       - "immich_network"
+      - "interplanetary_immich_network"
     restart: "unless-stopped"
 
   immich_postgres:
@@ -50,6 +51,7 @@ services:
       - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
     networks:
       - "immich_network"
+      - "interplanetary_immich_network"
     restart: "unless-stopped"
 
   immich_redis:
@@ -66,6 +68,7 @@ services:
       - "${IM_REDIS_PORT}:6379"
     networks:
       - "immich_network"
+      - "interplanetary_immich_network"
     restart: "unless-stopped"
 
 #######################################################
@@ -76,3 +79,7 @@ networks:
     name: "global_docker_network"
   immich_network:
     name: "immich_network"
+  interplanetary_immich_network:
+    name: "interplanetary_immich_network"
+    driver: overlay
+    external: "true"

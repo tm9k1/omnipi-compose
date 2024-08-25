@@ -22,6 +22,8 @@ services:
     env_file:
       - .env
     restart: always
+    networks:
+      - "interplanetary_immich_network"
 
   immich_microservices:
     container_name: "immich_microservices"
@@ -45,6 +47,8 @@ services:
       - immich-cache-thumbs:/usr/src/app/upload/thumbs
       - immich-data:/usr/src/app/upload/library
     restart: "unless-stopped"
+    networks:
+      - "interplanetary_immich_network"
 
 volumes:
   model-cache:
@@ -78,3 +82,9 @@ volumes:
       type: cifs
       device: "//requiem/hdd/media/images"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
+
+networks:
+  interplanetary_immich_network:
+    name: "interplanetary_immich_network"
+    driver: overlay
+    external: "true"
