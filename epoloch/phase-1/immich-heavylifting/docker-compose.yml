@@ -36,6 +36,7 @@ services:
       DB_HOSTNAME: ${IM_POSTGRES_HOSTNAME}
       TZ: 'Asia/Kolkata'
       IMMICH_WORKERS_EXCLUDE: 'api'
+      REDIS_HOSTNAME: ${IM_REDIS_HOSTNAME}
     user: 1000:100
     extends:
       file: hwaccel.transcoding.yml
