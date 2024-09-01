@@ -1,6 +1,6 @@
 services:
-  epoloch-docker-socket:
-    container_name: epoloch-docker-socket
+  genesis-docker-socket:
+    container_name: genesis-docker-socket
     image: tecnativa/docker-socket-proxy
     privileged: true
     environment:
