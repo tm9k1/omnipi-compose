@@ -7,6 +7,7 @@ services:
       - "PUID=1000"
       - "PGID=100"
       - "TZ=Asia/Kolkata"
+      - "TS_DEBUG_FIREWALL_MODE=auto"
     volumes:
       - "${TAILSCALE_CONFIGS}/data:/var/lib" # State data will be stored in this directory
       - /dev/net/tun:/dev/net/tun # Required for tailscale to work
