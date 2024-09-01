@@ -1,5 +1,3 @@
-version: "3.6"
-
 services:
   organizr: # Landing page
     image: organizr/organizr

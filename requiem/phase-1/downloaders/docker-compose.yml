@@ -1,6 +1,4 @@
-version: "3.6"
 services:
-
   pyload-ng: # download via http
     container_name: "pyload-ng"
     image: lscr.io/linuxserver/pyload-ng:latest

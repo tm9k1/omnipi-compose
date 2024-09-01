@@ -1,4 +1,3 @@
-version: "3.6"
 services:
   nextcloud: # For Google Drive shit
     container_name: "nextcloud"

@@ -1,10 +1,8 @@
-version: "3.6"
-services:
-
 ##################################################################################
 # https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
 ##################################################################################
 
+services:
   immich_server:
     container_name: "immich_server"
     image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"

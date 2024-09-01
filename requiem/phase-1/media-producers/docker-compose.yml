@@ -1,4 +1,3 @@
-version: "3.6"
 services:
   stremio-service:
     container_name: "stremio-service"
