@@ -1,7 +1,7 @@
 services:
   genesis-docker-socket:
     container_name: genesis-docker-socket
-    image: tecnativa/docker-socket-proxy
+    image: ghcr.io/tecnativa/docker-socket-proxy:latest
     privileged: true
     environment:
       - BUILD=1
