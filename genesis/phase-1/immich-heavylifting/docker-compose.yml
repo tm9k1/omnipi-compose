@@ -12,35 +12,36 @@ services:
   immich_machine_learning:
     container_name: "immich_machine_learning"
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    env_file:
+      - .env
     extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
       file: hwaccel.ml.yml
       service: openvino # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     ports:
-    - "3003:3003"
+    - "${TAILSCALE_IP}:3003:3003"
     volumes:
       - model-cache:/cache
-    env_file:
-      - .env
-    restart: always
-    networks:
-      - "interplanetary_immich_network"
+    restart: "unless-stopped"
+
 
   immich_microservices:
     container_name: "immich_microservices"
     image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
     env_file: .env
-    environment:
-      DB_USERNAME: ${IM_POSTGRES_USERNAME}
-      DB_PASSWORD: ${IM_POSTGRES_PASSWORD}
-      DB_DATABASE_NAME: ${IM_POSTGRES_DATABASE_NAME}
-      DB_HOSTNAME: ${IM_POSTGRES_HOSTNAME}
-      TZ: 'Asia/Kolkata'
-      IMMICH_WORKERS_EXCLUDE: 'api'
-      REDIS_HOSTNAME: ${IM_REDIS_HOSTNAME}
-    user: 1000:100
     extends:
       file: hwaccel.transcoding.yml
       service: vaapi
+    user: 1000:100
+    environment:
+      - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
+      - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
+      - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
+      - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
+      - "TZ=Asia/Kolkata"
+      - "IMMICH_WORKERS_EXCLUDE=api"
+      - "REDIS_HOSTNAME=${IM_REDIS_HOSTNAME}"
+    ports:
+      - "${TAILSCALE_IP}:3001:3001"
     volumes:
       - immich-configs-upload:/usr/src/app/upload/upload
       - immich-configs-profile:/usr/src/app/upload/profile
@@ -48,8 +49,7 @@ services:
       - immich-cache-thumbs:/usr/src/app/upload/thumbs
       - immich-data:/usr/src/app/upload/library
     restart: "unless-stopped"
-    networks:
-      - "interplanetary_immich_network"
+
 
 volumes:
   model-cache:
@@ -83,9 +83,3 @@ volumes:
       type: cifs
       device: "//requiem/hdd/media/images"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
-
-networks:
-  interplanetary_immich_network:
-    name: "interplanetary_immich_network"
-    driver: overlay
-    external: "true"
