@@ -7,21 +7,9 @@ services:
       - "PUID=1000"
       - "PGID=1000"
       - "TZ=Asia/Kolkata"
-    # ports:
-    #   - "9696:9696"
     volumes:
       - "${PROWLARR_CONFIGS}:/config"
-    networks:
-      - "cineris"
-      - "interplanetary_docker_network"
+    ports:
+      - ${TAILSCALE_IP}:9696:9696
     restart: "unless-stopped"
 
-networks:
-  interplanetary_docker_network:
-    name: "interplanetary_docker_network"
-    driver: overlay
-    external: true
-  cineris:
-    name: "cineris"
-    driver: overlay
-    external: "true"
