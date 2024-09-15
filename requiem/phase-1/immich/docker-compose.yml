@@ -28,7 +28,6 @@ services:
       - immich_postgres
     networks:
       - "global_docker_network"
-      - "immich_network"
     restart: "unless-stopped"
 
   immich_postgres:
@@ -47,8 +46,6 @@ services:
     volumes:
       - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
       - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
-    networks:
-      - "immich_network"
     restart: "unless-stopped"
 
   immich_redis:
@@ -63,8 +60,6 @@ services:
       test: redis-cli ping || exit 1
     ports:
       - "${TAILSCALE_IP}:${IM_REDIS_PORT}:6379"
-    networks:
-      - "immich_network"
     restart: "unless-stopped"
 
 #######################################################
@@ -73,5 +68,4 @@ networks:
   global_docker_network:
     external: "true"
     name: "global_docker_network"
-  immich_network:
-    name: "immich_network"
+
