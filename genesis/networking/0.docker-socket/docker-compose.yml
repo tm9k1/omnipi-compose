@@ -27,12 +27,6 @@ services:
       - VOLUMES=1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - "interplanetary_docker_network"
+    ports:
+      - ${TAILSCALE_IP}:2375:2375
     restart: "unless-stopped"
-
-networks:
-  interplanetary_docker_network:
-    name: "interplanetary_docker_network"
-    driver: overlay
-    external: "true"
