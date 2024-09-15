@@ -29,7 +29,6 @@ services:
     networks:
       - "global_docker_network"
       - "immich_network"
-      - "interplanetary_immich_network"
     restart: "unless-stopped"
 
   immich_postgres:
@@ -44,13 +43,12 @@ services:
       - "PGID=100"
       - "TZ=Asia/Kolkata"
     ports:
-      - "${IM_POSTGRES_PORT}:5432"
+      - "${TAILSCALE_IP}:${IM_POSTGRES_PORT}:5432"
     volumes:
       - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
       - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
     networks:
       - "immich_network"
-      - "interplanetary_immich_network"
     restart: "unless-stopped"
 
   immich_redis:
@@ -64,10 +62,9 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     ports:
-      - "${IM_REDIS_PORT}:6379"
+      - "${TAILSCALE_IP}:${IM_REDIS_PORT}:6379"
     networks:
       - "immich_network"
-      - "interplanetary_immich_network"
     restart: "unless-stopped"
 
 #######################################################
@@ -78,7 +75,3 @@ networks:
     name: "global_docker_network"
   immich_network:
     name: "immich_network"
-  interplanetary_immich_network:
-    name: "interplanetary_immich_network"
-    driver: overlay
-    external: "true"
