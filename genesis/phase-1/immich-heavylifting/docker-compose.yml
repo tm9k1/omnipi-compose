@@ -40,8 +40,6 @@ services:
       - "TZ=Asia/Kolkata"
       - "IMMICH_WORKERS_EXCLUDE=api"
       - "REDIS_HOSTNAME=${IM_REDIS_HOSTNAME}"
-    ports:
-      - "${TAILSCALE_IP}:3001:3001"
     volumes:
       - immich-configs-upload:/usr/src/app/upload/upload
       - immich-configs-profile:/usr/src/app/upload/profile
