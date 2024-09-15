@@ -21,9 +21,10 @@ services:
       - "${RADARR_CONFIGS}:/config"
       - "${RADARR_DOWNLOADS}:/downloads"
       - "${RADARR_MOVIES}:/movies"
+    ports:
+      - "${TAILSCALE_IP}:7878:7878"
     networks:
       - "global_docker_network"
-      - "cineris"
     restart: "unless-stopped"
 
   sonarr: # tv shows
@@ -38,9 +39,10 @@ services:
       - "${SONARR_CONFIGS}/config:/config"
       - "${SONARR_DOWNLOADS}:/downloads"
       - "${SONARR_TVSHOWS}:/tv"
+    ports:
+      - "${TAILSCALE_IP}:8989:8989"
     networks:
       - "global_docker_network"
-      - "cineris"
     restart: "unless-stopped"
 
   bazarr: # subs
@@ -62,8 +64,4 @@ services:
 networks:
   global_docker_network:
     name: "global_docker_network"
-    external: "true"
-  cineris:
-    name: "cineris"
-    driver: overlay
     external: "true"
