@@ -16,9 +16,8 @@ services:
     volumes:
       - "open-webui:/app/backend/data"
     ports:
-      -  "3000:8080"
+      -  "${TAILSCALE_IP}:3080:8080"
     networks:
-      - "interplanetary_docker_network"
       - "llm_network"
     restart: unless-stopped
 
@@ -41,7 +40,3 @@ volumes:
 networks:
   llm_network:
     name: "llm_network"
-  interplanetary_docker_network:
-    name: "interplanetary_docker_network"
-    driver: overlay
-    external: "true"
