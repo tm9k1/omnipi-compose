@@ -31,7 +31,7 @@ services:
   telegraf:
     container_name: "telegraf"
     image: "telegraf:latest"
-    user: "telegraf:${TELEGRAF_DOCKERGROUP}" # grep "docker" /etc/group and replace this with output
+    user: "telegraf:${TELEGRAF_DOCKERGROUP}" # grep "docker" /etc/group and replace this with the group id (xxx[x])
     env_file: .env
     environment:
       - "TZ=Asia/Kolkata"
