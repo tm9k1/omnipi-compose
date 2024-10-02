@@ -26,59 +26,8 @@ services:
       - "global_docker_network"
     restart: "unless-stopped"
 
-  wordpress_mysql:
-    container_name: "wordpress_mysql"
-    image: mysql:lts
-    env_file: .env
-    environment:
-      MYSQL_DATABASE: ${WORDPRESS_MYSQL_DATABASE}
-      MYSQL_RANDOM_ROOT_PASSWORD: ${WORDPRESS_MYSQL_ROOTPASSWD}
-      MYSQL_USER: ${WORDPRESS_MYSQL_USER}
-      MYSQL_PASSWORD: ${WORDPRESS_MYSQL_PASSWD}
-    volumes:
-      - "${WORDPRESS_MYSQL_CONFIGS}:/var/lib/mysql"
-    networks:
-      - "blog_network"
-    restart: unless-stopped
-
-  wordpress:
-    container_name: "wordpress"
-    image: wordpress:${WORDPRESS_VERSION}
-    env_file: .env
-    environment:
-      WORDPRESS_DB_HOST: ${WORDPRESS_MYSQL_HOST}
-      WORDPRESS_DB_NAME: ${WORDPRESS_MYSQL_DATABASE}
-      WORDPRESS_DB_USER: ${WORDPRESS_MYSQL_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_MYSQL_PASSWD}
-    volumes:
-      - "${WORDPRESS_CONFIGS}/html:/var/www/html"
-      - "${WORDPRESS_CONFIGS}/apache2.conf:/etc/apache2/apache2.conf"
-    networks:
-      - "global_docker_network"
-      - "blog_network"
-    restart: unless-stopped
-
-  couchdb:
-    image: couchdb:latest
-    container_name: obsidian-livesync
-    user: 1000:100
-    env_file: .env
-    environment:
-      COUCHDB_USER: ${OBSIDIAN_USER}
-      COUCHDB_PASSWORD: ${OBSIDIAN_PASSWORD}
-    volumes:
-      - ${OBSIDIAN_CONFIGS}/data:/opt/couchdb/data
-      - ${OBSIDIAN_CONFIGS}/local.ini:/opt/couchdb/etc/local.ini
-    #ports:
-    #  - 5984:5984
-    networks:
-      - global_docker_network
-    restart: unless-stopped
-
 networks:
   global_docker_network:
     external: "true"
     name: "global_docker_network"
-  blog_network:
-    name: "blog_network"
 
