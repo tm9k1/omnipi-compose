@@ -9,7 +9,7 @@ services:
       - "TZ=Asia/Kolkata"
     volumes:
       - "${HEADSCALE_CONFIGS}/config:/etc/headscale"
-    command: headscale serve
+    command: serve
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
