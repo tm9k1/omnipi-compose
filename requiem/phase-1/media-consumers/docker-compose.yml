@@ -79,6 +79,7 @@ services:
       - "PGID=100"
       - "TZ=Asia/Kolkata"
       - "JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHEDSERVERURL}"
+      - "DOCKER_MODS=ghcr.io/intro-skipper/intro-skipper-docker-mod"
     volumes:
       - "${JELLYFIN_CONFIGS}:/config"
       - "${JELLYFIN_MOVIES}:/data/movies"
