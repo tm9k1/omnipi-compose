@@ -3,10 +3,6 @@ services:
     container_name: "portainer"
     image: "portainer/portainer-ce"
     env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=1000"
-      - "TZ=Asia/Kolkata"
     volumes:
       - "${PORTAINER_CONFIGS}:/data"
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -17,14 +13,27 @@ services:
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest
-    environment:
-      DOZZLE_HOSTNAME: ${DOZZLE_HOSTNAME}
-      DOZZLE_REMOTE_HOST: ${DOZZLE_REMOTE_HOST}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - "global_docker_network"
+    env_file: .env
+    ports:
+      - "${TAILSCALE_IP}:8080:8080"
     restart: "unless-stopped"
+
+  dozzle-agent:
+    container_name: dozzle-agent
+    image: amir20/dozzle:latest
+    command: agent
+    env_file: .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "${TAILSCALE_IP}:7007:7007"
+    restart: "unless-stopped"
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      start_interval: 5s
 
 networks:
   global_docker_network:
