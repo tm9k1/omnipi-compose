@@ -22,6 +22,7 @@ services:
       - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
       - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
       - ${IMMICH_DATA}:/usr/src/app/upload/library
+      - ${IMMICH_BACKUP}/data:/usr/src/app/upload/backups
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich_redis
