@@ -46,6 +46,7 @@ services:
       - immich-cache-encoded-video:/usr/src/app/upload/encoded-video
       - immich-cache-thumbs:/usr/src/app/upload/thumbs
       - immich-data:/usr/src/app/upload/library
+      - immich-backup-data:/usr/src/app/upload/backups
     restart: "unless-stopped"
 
 
@@ -80,4 +81,10 @@ volumes:
     driver_opts:
       type: cifs
       device: "//requiem/hdd/media/images"
+      o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
+  immich-backup-data:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//requiem/etc/container-backups/immich/data"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
