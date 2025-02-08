@@ -83,7 +83,7 @@ services:
     volumes:
       - "${JELLYFIN_CONFIGS}:/config"
       - "${JELLYFIN_MOVIES}:/data/movies"
-      - "${JELLYFIN_MUSIC}:/data/music"
+      - "${JELLYFIN_MUSIC}:/data/music:ro"
       - "${JELLYFIN_TVSHOWS}:/data/tvshows"
       - "/opt/vc/lib:/opt/vc/lib"
     networks:
