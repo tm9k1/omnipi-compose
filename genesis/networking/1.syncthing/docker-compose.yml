@@ -1,0 +1,19 @@
+
+services:
+  syncthing:
+    container_name: "syncthing"
+    image: "lscr.io/linuxserver/syncthing:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${SYNCTHING_CONFIGS}/config:/config"
+      - "${DOTFILES_PATH}:/data1"
+    ports:
+      - "${TAILSCALE_IP}:${SYNCTHING_WEB_PORT}:8384/tcp"
+      - "${TAILSCALE_IP}:${SYNCTHING_DATA_PORT}:22000/tcp"
+      - "${TAILSCALE_IP}:${SYNCTHING_DATA_PORT}:22000/udp"
+      - "${TAILSCALE_IP}:${SYNCTHING_LOCAL_DISCOVERY_PORT}:21027/udp"
+    restart: "unless-stopped"
