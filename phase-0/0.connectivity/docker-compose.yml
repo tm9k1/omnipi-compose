@@ -21,4 +21,3 @@ services:
     command: tailscaled
     network_mode: host
     restart: unless-stopped
-
