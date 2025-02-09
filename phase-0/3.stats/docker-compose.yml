@@ -1,0 +1,31 @@
+services:
+  influxdb:
+    container_name: "influxdb"
+    image: "influxdb:latest"
+    env_file: .env
+    environment:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${INFLUXDB_CONFIGS}:/var/lib/influxdb2"
+    ports:
+      - "${TAILSCALE_IP}:${INFLUXDB_PORT}:8086"
+    restart: "unless-stopped"
+
+  telegraf:
+    container_name: "telegraf"
+    image: "telegraf:latest"
+    user: "telegraf:${TELEGRAF_DOCKERGROUP}" # grep "docker" /etc/group and replace this with the group id (xxx[x])
+    env_file: .env
+    environment:
+      - "TZ=Asia/Kolkata"
+    volumes:
+      - "${TELEGRAF_ROOT}:/hostfs:ro"
+      - "${TELEGRAF_HOSTFILE}:/etc/hosts:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${TELEGRAF_CONFIGS}/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
+    depends_on:
+      - influxdb
+    network_mode: "host"
+    restart: "unless-stopped"
