@@ -30,10 +30,12 @@ services:
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
+    healthcheck:
+      disable: false
 
   immich_postgres:
     container_name: "immich_postgres"
-    image: "registry.hub.docker.com/tensorchord/pgvecto-rs:${IM_POSTGRES_VERSION}"
+    image: "docker.io/tensorchord/pgvecto-rs:${IM_POSTGRES_VERSION}"
     env_file: .env
     environment:
       - "POSTGRES_PASSWORD=${IM_POSTGRES_PASSWORD}"
@@ -47,11 +49,29 @@ services:
     volumes:
       - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
       - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
+    healthcheck:
+      test: >-
+        pg_isready --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" || exit 1;
+        Chksum="$$(psql --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" --tuples-only --no-align
+        --command='SELECT COALESCE(SUM(checksum_failures), 0) FROM pg_stat_database')";
+        echo "checksum failure count is $$Chksum";
+        [ "$$Chksum" = '0' ] || exit 1
+      interval: 5m
+      start_interval: 30s
+      start_period: 5m
+    command: >-
+      postgres
+      -c shared_preload_libraries=vectors.so
+      -c 'search_path="$$user", public, vectors'
+      -c logging_collector=on
+      -c max_wal_size=2GB
+      -c shared_buffers=512MB
+      -c wal_compression=on
     restart: "unless-stopped"
 
   immich_redis:
     container_name: "immich_redis"
-    image: "registry.hub.docker.com/library/redis:${IM_REDIS_VERSION}"
+    image: "docker.io/redis:${IM_REDIS_VERSION}"
     env_file: .env
     environment:
       - "PUID=1000"
