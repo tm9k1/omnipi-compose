@@ -22,7 +22,8 @@ services:
     volumes:
       - model-cache:/cache
     restart: "unless-stopped"
-
+    healthcheck:
+      disable: false
 
   immich_microservices:
     container_name: "immich_microservices"
@@ -48,6 +49,8 @@ services:
       - immich-data:/usr/src/app/upload/library
       - immich-backup-data:/usr/src/app/upload/backups
     restart: "unless-stopped"
+    healthcheck:
+      disable: false
 
 
 volumes:
