@@ -9,7 +9,7 @@ services:
       - "GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}"
     volumes:
       - "${GRAFANA_CONFIGS}/config:/var/lib/grafana"
-      - "${GRAFANA_CONFIGS}/defaults.ini:/usr/share/grafana/conf/defaults.ini"
+      - "${GRAFANA_CONFIGS}/defaults.ini:/etc/grafana/grafana.ini"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
