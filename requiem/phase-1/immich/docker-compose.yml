@@ -45,7 +45,7 @@ services:
       - "PGID=100"
       - "TZ=Asia/Kolkata"
     ports:
-      - "${TAILSCALE_IP}:${IM_POSTGRES_PORT}:5432"
+      - "${IM_POSTGRES_PORT}:5432"
     volumes:
       - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
       - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
@@ -80,7 +80,7 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     ports:
-      - "${TAILSCALE_IP}:${IM_REDIS_PORT}:6379"
+      - "${IM_REDIS_PORT}:6379"
     restart: "unless-stopped"
 
 #######################################################

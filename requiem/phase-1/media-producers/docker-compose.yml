@@ -22,7 +22,7 @@ services:
       - "${RADARR_DOWNLOADS}:/downloads"
       - "${RADARR_MOVIES}:/movies"
     ports:
-      - "${TAILSCALE_IP}:7878:7878"
+      - "${RADARR_PORT}:7878"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
@@ -40,7 +40,7 @@ services:
       - "${SONARR_DOWNLOADS}:/downloads"
       - "${SONARR_TVSHOWS}:/tv"
     ports:
-      - "${TAILSCALE_IP}:8989:8989"
+      - "${SONARR_PORT}:8989"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"

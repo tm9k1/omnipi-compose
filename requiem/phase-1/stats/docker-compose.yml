@@ -25,7 +25,7 @@ services:
     volumes:
       - "${INFLUXDB_CONFIGS}:/var/lib/influxdb2"
     ports:
-      - "${TAILSCALE_IP}:${INFLUXDB_PORT}:8086"
+      - "${INFLUXDB_PORT}:8086"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
