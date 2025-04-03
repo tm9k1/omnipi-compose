@@ -10,6 +10,6 @@ services:
     volumes:
       - "${PROWLARR_CONFIGS}:/config"
     ports:
-      - ${TAILSCALE_IP}:9696:9696
+      - ${PROWLARR_PORT}:9696
     restart: "unless-stopped"
 

@@ -1,13 +1,3 @@
-#
-# WARNING: Make sure to use the docker-compose.yml of the current release:
-#
-# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-#
-# The compose file on main may not be compatible with the latest release.
-#
-
-name: immich-heavylifting
-
 services:
   immich_machine_learning:
     container_name: "immich_machine_learning"
@@ -18,7 +8,7 @@ services:
       file: hwaccel.ml.yml
       service: openvino # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     ports:
-    - "${TAILSCALE_IP}:3003:3003"
+    - "${IM_ML_PORT}:3003"
     volumes:
       - model-cache:/cache
     restart: "unless-stopped"

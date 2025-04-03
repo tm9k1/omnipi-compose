@@ -16,7 +16,7 @@ services:
     volumes:
       - "open-webui:/app/backend/data"
     ports:
-      -  "${TAILSCALE_IP}:3080:8080"
+      -  "3080:8080"
     networks:
       - "llm_network"
     restart: unless-stopped
