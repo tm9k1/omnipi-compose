@@ -16,6 +16,6 @@ RUN yarn build:app:docker
 
 FROM nginx:1.27-alpine-slim
 ARG VERSION
-COPY --from=build /opt/excalidraw-$VERSION/build /usr/share/nginx/html
+COPY --from=build /opt/excalidraw-$VERSION/excalidraw-app /usr/share/nginx/html
 
 HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
