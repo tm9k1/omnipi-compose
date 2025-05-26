@@ -1,0 +1,9 @@
+services:
+  tedicross:
+    container_name: tedicross
+    image: tedicross/tedicrosss
+    env_file: .env
+    volumes:
+      - "${TEDICROSS_CONFIGS}/data/:/opt/TediCross/data"
+    restart: unless-stopped
+
