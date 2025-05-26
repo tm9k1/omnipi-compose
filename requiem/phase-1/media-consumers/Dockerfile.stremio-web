@@ -1,5 +1,4 @@
-FROM nginx:1.21-alpine
-ARG VERSION
+FROM nginx:1.28-alpine
 RUN apk update
 RUN apk add wget unzip
 WORKDIR /opt

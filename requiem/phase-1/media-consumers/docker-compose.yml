@@ -3,8 +3,6 @@ services:
     container_name: "stremio-web"
     build:
       dockerfile: ./Dockerfile.stremio-web
-      args:
-        - ${STREMIO_WEB_VERSION}
     env_file: .env
     ports:
       - "8181:80"
