@@ -45,6 +45,7 @@ services:
       - "${TELEGRAF_CONFIGS}/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
       - "${TELEGRAF_CONFIGS}/rpi-freq:/usr/local/bin/rpi-freq:ro"
       - "${TELEGRAF_CONFIGS}/infinity-pulse:/usr/local/bin/infinity-pulse:ro"
+      - "${TELEGRAF_CONFIGS}/oracle-pulse:/usr/local/bin/oracle-pulse:ro"
     depends_on:
       - influxdb
     network_mode: "host"
