@@ -65,7 +65,6 @@ services:
     ports:
       - "${SYNCTHING_DATA_PORT}:22000/tcp"
       - "${SYNCTHING_DATA_PORT}:22000/udp"
-      - "${SYNCTHING_LOCAL_DISCOVERY_PORT}:21027/udp"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
