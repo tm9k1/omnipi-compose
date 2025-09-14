@@ -35,6 +35,16 @@ services:
       start_period: 5s
       start_interval: 5s
 
+  kuma:
+    container_name: kuma
+    image: louislam/uptime-kuma:1
+    env_file: .env
+    volumes:
+      - "${UPTIME_KUMA_CONFIGS}:/data"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
 networks:
   global_docker_network:
     external: "true"
