@@ -22,6 +22,7 @@ services:
       - "VIRTUAL_HOST=${PIHOLE_VIRTUAL_HOST}"
       - "WEBPASSWORD=${PIHOLE_WEBPASSWORD}"
     ports:
+      - "${PIHOLE_WEB}:80/tcp"
       - "${PIHOLE_DNS}:53/tcp"
       - "${PIHOLE_DNS}:53/udp"
       - "${PIHOLE_DISCOVERY}:67/udp"
