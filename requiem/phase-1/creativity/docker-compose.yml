@@ -14,18 +14,6 @@ services:
       - "global_docker_network"
     restart: "unless-stopped"
 
-  draw-io:
-    container_name: "draw-io"
-    image: "jgraph/drawio:${DRAW_IO_VERSION}" # select any one from https://hub.docker.com/r/jgraph/drawio/tags
-    env_file: .env
-    environment:
-      PUID: 1000
-      PGID: 100
-      TZ: Asia/Kolkata
-    networks:
-      - "global_docker_network"
-    restart: "unless-stopped"
-
 networks:
   global_docker_network:
     external: "true"
