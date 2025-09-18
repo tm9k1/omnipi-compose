@@ -37,10 +37,10 @@ services:
 
   kuma:
     container_name: kuma
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma:beta
     env_file: .env
     volumes:
-      - "${UPTIME_KUMA_CONFIGS}:/data"
+      - "${UPTIME_KUMA_CONFIGS}:/app/data"
     networks:
       - "global_docker_network"
     restart: "unless-stopped"
