@@ -4,8 +4,6 @@ services:
     build:
       dockerfile: ./Dockerfile.stremio-web
     env_file: .env
-    ports:
-      - "8181:80"
     environment:
       - "TZ=Asia/Kolkata"
     networks:
