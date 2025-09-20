@@ -4,12 +4,19 @@ services:
     build:
       dockerfile: Dockerfile.excalidraw
       args:
-        - ${EXCALIDRAW_VERSION} # select any one from https://github.com/excalidraw/excalidraw/tags
+        - ${EXCALIDRAW_DOCKERFILE_VERSION} # select any one from https://github.com/excalidraw/excalidraw/tags
+        - ${EXCALIDRAW_DOCKERFILE_NODE_ENV}
+        - ${EXCALIDRAW_DOCKEFILE_DOMAIN_NAME}
+        - ${EXCALIDRAW_DOCKERFILE_TZ}
     env_file: .env
-    environment:
-      PUID: 1000
-      PGID: 100
-      TZ: Asia/Kolkata
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
+  excalidraw-room:
+    container_name: "excalidraw-room"
+    image: excalidraw/excalidraw-room:latest
+    env_file: .env
     networks:
       - "global_docker_network"
     restart: "unless-stopped"

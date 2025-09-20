@@ -1,21 +1,30 @@
-FROM node:18 AS build
+FROM node:22 AS build
 ARG VERSION
+
 WORKDIR /opt
-# RUN apk add git
-# RUN git clone https://github.com/excalidraw/excalidraw node_app
-RUN wget https://github.com/excalidraw/excalidraw/archive/refs/tags/v$VERSION.zip
-RUN unzip v$VERSION.zip
-RUN ls
-WORKDIR /opt/excalidraw-$VERSION
-RUN ls
+RUN wget https://github.com/excalidraw/excalidraw/archive/refs/tags/v$VERSION.zip -O excalidraw.zip
+RUN unzip excalidraw.zip
+RUN mv excalidraw-$VERSION node_app
+
+WORKDIR /opt/node_app
+
+ARG TZ
+ARG DOMAIN_NAME
+
+ENV PUB_SRV_NAME=draw.$DOMAIN_NAME
+# remove this when done exposing over nginx
+ENV PUB_SRV_NAME_WS=draw-ws.$DOMAIN_NAME
+
+ENV REACT_APP_BACKEND_V2_GET_URL=https://$PUB_SRV_NAME/api/v2/
+ENV REACT_APP_BACKEND_V2_POST_URL=https://$PUB_SRV_NAME/api/v2/post
+ENV REACT_APP_WS_SERVER_URL=https://$PUB_SRV_NAME_WS
+
 RUN yarn --network-timeout 600000
 
-ARG NODE_ENV=production
-
+ARG NODE_ENV
 RUN yarn build:app:docker
 
 FROM nginx:1.27-alpine-slim
-ARG VERSION
-COPY --from=build /opt/excalidraw-$VERSION/excalidraw-app /usr/share/nginx/html
+COPY --from=build /opt/node_app/excalidraw-app/build /usr/share/nginx/html
 
 HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
