@@ -4,11 +4,11 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     env_file:
       - .env
-    extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
+    extends:
       file: hwaccel.ml.yml
-      service: openvino # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+      service: cuda
     ports:
-    - "${IM_ML_PORT}:3003"
+    - "${IMMICH_ML_PORT}:3003"
     volumes:
       - model-cache:/cache
     restart: "unless-stopped"
@@ -21,23 +21,23 @@ services:
     env_file: .env
     extends:
       file: hwaccel.transcoding.yml
-      service: vaapi
+      service: nvenc
     user: 1000:100
     environment:
-      - "DB_USERNAME=${IM_POSTGRES_USERNAME}"
-      - "DB_PASSWORD=${IM_POSTGRES_PASSWORD}"
-      - "DB_DATABASE_NAME=${IM_POSTGRES_DATABASE_NAME}"
-      - "DB_HOSTNAME=${IM_POSTGRES_HOSTNAME}"
+      - "DB_USERNAME=${IMMICH_POSTGRES_USERNAME}"
+      - "DB_PASSWORD=${IMMICH_POSTGRES_PASSWORD}"
+      - "DB_DATABASE_NAME=${IMMICH_POSTGRES_DATABASE_NAME}"
+      - "DB_HOSTNAME=${IMMICH_POSTGRES_HOSTNAME}"
       - "TZ=Asia/Kolkata"
       - "IMMICH_WORKERS_EXCLUDE=api"
-      - "REDIS_HOSTNAME=${IM_REDIS_HOSTNAME}"
+      - "REDIS_HOSTNAME=${IMMICH_REDIS_HOSTNAME}"
     volumes:
-      - immich-configs-upload:/usr/src/app/upload/upload
-      - immich-configs-profile:/usr/src/app/upload/profile
-      - immich-cache-encoded-video:/usr/src/app/upload/encoded-video
-      - immich-cache-thumbs:/usr/src/app/upload/thumbs
-      - immich-data:/usr/src/app/upload/library
-      - immich-backup-data:/usr/src/app/upload/backups
+      - immich-configs-upload:/data/upload
+      - immich-configs-profile:/data/profile
+      - immich-cache-encoded-video:/data/encoded-video
+      - immich-cache-thumbs:/data/thumbs
+      - immich-data:/data/library
+      - immich-backup-data:/data/backups
     restart: "unless-stopped"
     healthcheck:
       disable: false
@@ -49,35 +49,35 @@ volumes:
     driver: local
     driver_opts:
       type: cifs
-      device: "//requiem/etc/container_configs/cache/immich/upload"
+      device: "//${REQUIEM_SMB_HOSTNAME}/${IMMICH_CACHE}/upload"
       o: "username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
   immich-configs-profile:
     driver: local
     driver_opts:
       type: cifs
-      device: "//requiem/etc/container_configs/immich/immich_server/profile"
+      device: "//${REQUIEM_SMB_HOSTNAME}/${IMMICH_CONFIGS}/profile"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
   immich-cache-encoded-video:
     driver: local
     driver_opts:
       type: cifs
-      device: "//requiem/etc/container_configs/cache/immich/encoded-video"
+      device: "//${REQUIEM_SMB_HOSTNAME}/${IMMICH_CACHE}/encoded-video"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
   immich-cache-thumbs:
     driver: local
     driver_opts:
       type: cifs
-      device: "//requiem/etc/container_configs/cache/immich/thumbs"
+      device: "//${REQUIEM_SMB_HOSTNAME}/${IMMICH_CACHE}/thumbs"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
   immich-data:
     driver: local
     driver_opts:
       type: cifs
-      device: "//requiem/hdd/media/images"
+      device: "//${REQUIEM_SMB_HOSTNAME}/${IMMICH_LIBRARY}"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
   immich-backup-data:
     driver: local
     driver_opts:
       type: cifs
-      device: "//requiem/etc/container-backups/immich/data"
+      device: "//${REQUIEM_SMB_HOSTNAME}/${IMMICH_BACKUP}"
       o: "addr=requiem,username=${REQUIEM_SMB_USERNAME},password=${REQUIEM_SMB_PASSWORD},uid=1000,gid=100"
