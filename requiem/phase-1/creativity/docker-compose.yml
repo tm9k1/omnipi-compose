@@ -15,7 +15,8 @@ services:
 
   excalidraw-room:
     container_name: "excalidraw-room"
-    image: excalidraw/excalidraw-room:latest
+    build:
+      dockerfile: Dockerfile.excalidraw-room
     env_file: .env
     networks:
       - "global_docker_network"
@@ -25,4 +26,3 @@ networks:
   global_docker_network:
     external: "true"
     name: "global_docker_network"
-

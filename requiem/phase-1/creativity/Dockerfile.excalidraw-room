@@ -1,0 +1,24 @@
+FROM node:12-alpine
+
+WORKDIR /opt
+RUN wget https://github.com/excalidraw/excalidraw-room/archive/refs/heads/master.zip -O excalidraw-room.zip
+RUN unzip excalidraw-room.zip
+RUN mv excalidraw-room-master excalidraw-room
+# RUN ls && sleep 10
+
+# intentionally move to a new directory to work with relevant files only
+WORKDIR /opt/node_app
+RUN mv ../excalidraw-room/package.json .
+RUN mv ../excalidraw-room/yarn.lock .
+
+RUN yarn
+
+RUN mv ../excalidraw-room/tsconfig.json .
+RUN mv ../excalidraw-room/src ./src
+
+RUN yarn build
+
+EXPOSE 80
+CMD ["yarn", "start"]
+
+HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
