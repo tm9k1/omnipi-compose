@@ -1,28 +1,23 @@
-##################################################################################
-# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-##################################################################################
-
 services:
   immich_server:
     container_name: "immich_server"
     image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
     env_file: .env
     environment:
-      DB_USERNAME: ${IM_POSTGRES_USERNAME}
-      DB_PASSWORD: ${IM_POSTGRES_PASSWORD}
-      DB_DATABASE_NAME: ${IM_POSTGRES_DATABASE_NAME}
-      DB_HOSTNAME: ${IM_POSTGRES_HOSTNAME}
-      REDIS_HOSTNAME: ${IM_REDIS_HOSTNAME}
-      TZ: 'Asia/Kolkata'
+      DB_USERNAME: ${IMMICH_POSTGRES_USERNAME}
+      DB_PASSWORD: ${IMMICH_POSTGRES_PASSWORD}
+      DB_DATABASE_NAME: ${IMMICH_POSTGRES_DATABASE_NAME}
+      DB_HOSTNAME: ${IMMICH_POSTGRES_HOSTNAME}
+      REDIS_HOSTNAME: ${IMMICH_REDIS_HOSTNAME}
       IMMICH_WORKERS_INCLUDE: 'api'
     user: 1000:100
     volumes:
-      - ${IMMICH_CACHE}/upload:/usr/src/app/upload/upload
-      - ${IMMICH_CONFIGS}/profile:/usr/src/app/upload/profile
-      - ${IMMICH_CACHE}/encoded-video:/usr/src/app/upload/encoded-video
-      - ${IMMICH_CACHE}/thumbs:/usr/src/app/upload/thumbs
-      - ${IMMICH_DATA}:/usr/src/app/upload/library
-      - ${IMMICH_BACKUP}/data:/usr/src/app/upload/backups
+      - ${IMMICH_LIBRARY}:/data/library
+      - ${IMMICH_CACHE}/upload:/data/upload
+      - ${IMMICH_CACHE}/thumbs:/data/thumbs
+      - ${IMMICH_CACHE}/encoded-video:/data/encoded-video
+      - ${IMMICH_CONFIGS}/profile:/data/profile
+      - ${IMMICH_BACKUP}:/data/backups
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich_redis
@@ -35,52 +30,27 @@ services:
 
   immich_postgres:
     container_name: "immich_postgres"
-    image: "docker.io/tensorchord/pgvecto-rs:${IM_POSTGRES_VERSION}"
+    image: ghcr.io/immich-app/postgres:${IMMICH_POSTGRES_VERSION}
     env_file: .env
     environment:
-      - "POSTGRES_PASSWORD=${IM_POSTGRES_PASSWORD}"
-      - "POSTGRES_USER=${IM_POSTGRES_USERNAME}"
-      - "POSTGRES_DB=${IM_POSTGRES_DATABASE_NAME}"
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
+      - "POSTGRES_PASSWORD=${IMMICH_POSTGRES_PASSWORD}"
+      - "POSTGRES_USER=${IMMICH_POSTGRES_USERNAME}"
+      - "POSTGRES_DB=${IMMICH_POSTGRES_DATABASE_NAME}"
     ports:
-      - "${IM_POSTGRES_PORT}:5432"
+      - "${IMMICH_POSTGRES_PORT}:5432"
     volumes:
-      - "${IM_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
-      - "${IM_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
-    healthcheck:
-      test: >-
-        pg_isready --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" || exit 1;
-        Chksum="$$(psql --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" --tuples-only --no-align
-        --command='SELECT COALESCE(SUM(checksum_failures), 0) FROM pg_stat_database')";
-        echo "checksum failure count is $$Chksum";
-        [ "$$Chksum" = '0' ] || exit 1
-      interval: 5m
-      start_interval: 30s
-      start_period: 5m
-    command: >-
-      postgres
-      -c shared_preload_libraries=vectors.so
-      -c 'search_path="$$user", public, vectors'
-      -c logging_collector=on
-      -c max_wal_size=2GB
-      -c shared_buffers=512MB
-      -c wal_compression=on
+      - "${IMMICH_POSTGRES_CONFIGS}/init:/docker-entrypoint-initdb.d"
+      - "${IMMICH_POSTGRES_CONFIGS}/data:/var/lib/postgresql/data"
     restart: "unless-stopped"
 
   immich_redis:
     container_name: "immich_redis"
-    image: "docker.io/redis:${IM_REDIS_VERSION}"
+    image: "docker.io/valkey/valkey:${IMMICH_REDIS_VERSION}"
     env_file: .env
-    environment:
-      - "PUID=1000"
-      - "PGID=100"
-      - "TZ=Asia/Kolkata"
     healthcheck:
       test: redis-cli ping || exit 1
     ports:
-      - "${IM_REDIS_PORT}:6379"
+      - "${IMMICH_REDIS_PORT}:6379"
     restart: "unless-stopped"
 
 #######################################################
