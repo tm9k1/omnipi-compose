@@ -43,9 +43,17 @@ services:
       - "${UPTIME_KUMA_CONFIGS}:/app/data"
     networks:
       - "global_docker_network"
+      - "nextcloud_network"
+      - "blog_network"
     restart: "unless-stopped"
 
 networks:
   global_docker_network:
     external: "true"
     name: "global_docker_network"
+  nextcloud_network:
+    external: "true"
+    name: "nextcloud_network"
+  blog_network:
+    external: "true"
+    name: "blog_network"
