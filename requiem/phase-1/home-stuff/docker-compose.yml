@@ -13,6 +13,17 @@ services:
       - "global_docker_network"
     restart: "unless-stopped"
 
+  matter-server:
+    container_name: matter-server
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    security_opt:
+      - apparmor=unconfined
+    volumes:
+      - "${MATTER_CONFIGS}/data:/data"
+      - /run/dbus:/run/dbus:ro
+    network_mode: host
+    restart: "unless-stopped"
+
 networks:
   global_docker_network:
     external: "true"
