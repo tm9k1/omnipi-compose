@@ -35,6 +35,18 @@ services:
       - "global_docker_network"
     restart: "unless-stopped"
 
+  errorpage-server:
+    image: nginx:alpine
+    container_name: errorpage-server
+    volumes:
+      - "${ERRORPAGE_CONFIGS}/50x:/usr/share/nginx/html:ro"
+      - "${ERRORPAGE_CONFIGS}/config:/etc/nginx/"
+    ports:
+        - "8069:80"
+    networks:
+      - "global_docker_network"
+    restart: "unless-stopped"
+
 networks:
   global_docker_network:
     name: "global_docker_network"
