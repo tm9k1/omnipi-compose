@@ -1,0 +1,22 @@
+services:
+  copyparty:
+    container_name: "copyparty"
+    image: copyparty/ac:latest
+    user: "${PUID}:${PGID}"
+    hostname: "copyparty"
+    command:
+      - --rproxy=${COPYPARTY_RPROXY}
+      - --xff-src=${COPYPARTY_XFF_SRC}
+    env_file: .env
+    volumes:
+      - ${COPYPARTY_CONFIGS}/config:/cfg     # Configuration and database files
+      - ${COPYPARTY_DATA1}:/w1        # Your actual media/files to be shared
+      - ${COPYPARTY_DATA2}:/w2        # Your actual media/files to be shared
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"
