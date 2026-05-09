@@ -16,7 +16,7 @@ services:
     image: "influxdb:latest"
     env_file: .env
     volumes:
-      - "${INFLUXDB_CONFIGS}:/var/lib/influxdb2"
+      - "${INFLUXDB_CONFIGS}/config:/var/lib/influxdb2"
     ports:
       - "${INFLUXDB_PORT}:8086"
     networks:
