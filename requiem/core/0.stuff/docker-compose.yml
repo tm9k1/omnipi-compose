@@ -17,6 +17,7 @@ services:
     container_name: "pihole"
     image: "pihole/pihole:latest"
     env_file: .env
+    hostname: "pihole"
     environment:
       - "TZ=Asia/Kolkata"
       - "VIRTUAL_HOST=${PIHOLE_VIRTUAL_HOST}"
