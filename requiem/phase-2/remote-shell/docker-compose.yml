@@ -1,0 +1,29 @@
+services:
+  remote-shell:
+    container_name: "remote-shell"
+    build:
+      dockerfile: ./Dockerfile.ttyd
+      args:
+        - ${TTYD_VERSION}
+        - ${TTYD_MAGIC_COMMAND}
+        - ${TTYD_REMOTE_SHELL_PASSWORD}
+        - ${TTYD_TMOUT}
+    user: "${PUID}:${PGID}"
+    hostname: "remote-shell"
+    env_file: .env
+    volumes:
+      - ${TTYD_SECRET_KEY}:/home/ubuntu/.ssh:ro     # Configuration and database files
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"
