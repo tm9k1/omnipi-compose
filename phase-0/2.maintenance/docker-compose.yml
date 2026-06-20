@@ -1,7 +1,7 @@
 services:
   dozzle-agent:
     container_name: dozzle-agent
-    image: amir20/dozzle:v8
+    image: amir20/dozzle:v10
     command: agent
     env_file: .env
     volumes:
