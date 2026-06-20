@@ -12,7 +12,7 @@ services:
 
   dozzle:
     container_name: dozzle
-    image: amir20/dozzle:v8
+    image: amir20/dozzle:v10
     env_file: .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -22,7 +22,7 @@ services:
 
   dozzle-agent:
     container_name: dozzle-agent
-    image: amir20/dozzle:v8
+    image: amir20/dozzle:v10
     command: agent
     env_file: .env
     volumes:
