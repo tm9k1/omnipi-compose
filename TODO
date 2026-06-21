@@ -7,10 +7,8 @@
       Port changed from `${TAILSCALE_IP}:${PORT}:5432` to `${PORT}:5432` — now binds 0.0.0.0.
       Restrict back to a specific IP or remove the host port mappings (services talk over docker network).
 
-- [ ] **remote-shell: password baked into image layer**
-      `requiem/phase-2/remote-shell/Dockerfile.ttyd`
-      `ARG REMOTE_SHELL_PASSWORD=supersecretpassword` + `ENV REMOTE_SHELL_PASSWORD=...` exposes the
-      credential in `docker history` / `docker inspect`. Inject at runtime via env_file instead.
+- [x] **remote-shell: password baked into image layer** *(fixed 2026-06-21)*
+      Removed from build args/ENV; injected at runtime via env_file.
 
 ## High / Correctness
 
@@ -26,14 +24,11 @@
 
 ## Medium / Correctness & Security
 
-- [ ] **remote-shell: os.system() blocks asyncio event loop**
-      `requiem/phase-2/remote-shell/remote_shell.py` (launch_magic_command)
-      `os.system(MAGIC_COMMAND)` is synchronous — stalls the event loop for the whole session.
-      Replace with `asyncio.create_subprocess_shell()`.
+- [x] **remote-shell: os.system() blocks asyncio event loop** *(fixed 2026-06-21)*
+      Replaced with asyncio.create_subprocess_shell().
 
-- [ ] **remote-shell: timing-vulnerable password comparison**
-      `requiem/phase-2/remote-shell/remote_shell.py` (authenticate)
-      `password == PASSWORD` leaks timing info. Use `hmac.compare_digest(password, PASSWORD)`.
+- [x] **remote-shell: timing-vulnerable password comparison** *(fixed 2026-06-21)*
+      Now uses hmac.compare_digest().
 
 - [ ] **syncthing: LAN discovery port removed**
       `requiem/phase-1/cloud/docker-compose.yml`
@@ -42,17 +37,11 @@
 
 ## Low
 
-- [ ] **remote-shell: TTYD_TMOUT build arg never consumed**
-      `requiem/phase-2/remote-shell/docker-compose.yml` + `Dockerfile.ttyd`
-      `TTYD_TMOUT` is passed as a build arg but `ARG TTYD_TMOUT` is missing in the Dockerfile.
-      Add the ARG declaration and wire it into the entrypoint to enforce idle timeout.
+- [x] **remote-shell: TTYD_TMOUT build arg never consumed** *(fixed 2026-06-21)*
+      ARG TMOUT added to Dockerfile; ENV TMOUT set for subprocess idle timeout.
 
-- [ ] **remote-shell: read_only container may fail on Python __pycache__ writes**
-      `requiem/phase-2/remote-shell/docker-compose.yml`
-      `read_only: true` with only `/tmp` as tmpfs. Python silently skips bytecache on EROFS but
-      some textual dependencies may attempt writes at import time. Verify startup works in practice.
+- [x] **remote-shell: read_only container may fail on Python __pycache__ writes** *(fixed 2026-06-21)*
+      Python bytecode pre-compiled in image; no runtime writes needed.
 
-- [ ] **Dockerfile.ttyd: multiple RUN apt install layers**
-      `requiem/phase-2/remote-shell/Dockerfile.ttyd`
-      4 separate `RUN apt install` calls inflate image size. Consolidate into one RUN layer.
-      Also: `ssh` is installed but unused — consider removing it to reduce attack surface.
+- [x] **Dockerfile.ttyd: multiple RUN apt install layers** *(fixed 2026-06-21)*
+      Consolidated into one RUN; removed unused ssh; added --no-install-recommends + cache cleanup.
