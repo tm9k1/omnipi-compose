@@ -1,0 +1,79 @@
+services:
+  actual-server:
+    container_name: "actual-server"
+    image: docker.io/actualbudget/actual-server:latest
+    user: "${PUID}:${PGID}"
+    hostname: "actual-server"
+    env_file: .env
+    volumes:
+      - ${ACTUAL_DATA}:/data
+    healthcheck:
+      test: ['CMD-SHELL', 'node src/scripts/health-check.js']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - "global_docker_network"
+      - "finance_network"
+    restart: unless-stopped
+
+  actual-helper:
+    container_name: "actual-helper"
+    image: ghcr.io/tm9k1/actual-helper:latest
+    user: "${PUID}:${PGID}"
+    hostname: "actual-server"
+    env_file: .env
+    environment:
+      ACTUAL_DATA_DIR: /data
+    volumes:
+      - data:/data
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:'+(process.env.PORT||3847)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    networks:
+      - "finance_network"
+    restart: unless-stopped
+
+  n8n:
+    container_name: "n8n"
+    image: docker.n8n.io/n8nio/n8n
+    user: "${PUID}:${PGID}"
+    hostname: "n8n"
+    env_file: .env
+    environment:
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+    volumes:
+      - ${N8N_CONFIG}/config:/home/node/.n8n
+      - ${N8N_SHARED_DIR}:/files
+    networks:
+      - "global_docker_network"
+      - "finance_network"
+    restart: unless-stopped
+
+
+networks:
+  global_docker_network:
+    external: "true"
+    name: "global_docker_network"
+  finance_network:
+    name: "finance_network"
+
+
+volumes:
+  data:
+    name: "actual-helper-data"
