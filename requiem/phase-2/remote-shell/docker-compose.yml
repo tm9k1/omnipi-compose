@@ -5,15 +5,11 @@ services:
       dockerfile: ./Dockerfile.ttyd
       args:
         - ${TTYD_VERSION}
-        - ${TTYD_MAGIC_COMMAND}
-        - ${TTYD_TMOUT}
     user: "${PUID}:${PGID}"
     hostname: "remote-shell"
     env_file: .env
-    environment:
-      - REMOTE_SHELL_PASSWORD
     volumes:
-      - ${TTYD_SECRET_KEY}:/home/ubuntu/.ssh:ro     # Configuration and database files
+      - ${TTYD_SECRET_KEY}:/home/ubuntu/.ssh:ro
     read_only: true
     cap_drop:
       - ALL

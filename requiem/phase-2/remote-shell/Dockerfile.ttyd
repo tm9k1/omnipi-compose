@@ -11,16 +11,14 @@ RUN mkdir -p /opt/remote-shell \
     && /opt/remote-shell/venv/bin/pip install --upgrade pip textual --no-cache-dir
 
 COPY remote_shell.py /opt/remote-shell/remote_shell.py
+COPY docker-entrypoint-ttyd.sh /usr/local/bin/docker-entrypoint-ttyd.sh
 
 # Pre-compile bytecode so Python won't attempt cache writes in the read_only container
-RUN /opt/remote-shell/venv/bin/python -m compileall -q /opt/remote-shell/
+RUN /opt/remote-shell/venv/bin/python -m compileall -q /opt/remote-shell/ \
+    && chmod +x /usr/local/bin/docker-entrypoint-ttyd.sh
 
-ARG MAGIC_COMMAND="echo 'This is a magic command. If you see this, the remote shell is working.'"
-ENV MAGIC_COMMAND=${MAGIC_COMMAND}
+# MAGIC_COMMAND and REMOTE_SHELL_PASSWORD are NOT baked into the image.
+# TTYD_IDLE_TIMEOUT (seconds) is optional; omit or set to 0 to disable.
+# All three are injected at runtime via env_file.
 
-ARG TMOUT=300
-ENV TMOUT=${TMOUT}
-
-# REMOTE_SHELL_PASSWORD is NOT baked into the image — injected at runtime via env_file
-
-ENTRYPOINT ["ttyd", "-W", "-w", "/home/ubuntu", "-p", "7681", "-t", "fontSize=14", "-t", "theme={'background':'#000000'}", "/opt/remote-shell/venv/bin/python", "/opt/remote-shell/remote_shell.py"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint-ttyd.sh"]
