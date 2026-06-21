@@ -28,14 +28,52 @@ services:
     environment:
       - "TZ=Asia/Kolkata"
     volumes:
-      - "ollama:/root/.ollama"
+      - "${OLLAMA_DATA}:/root/.ollama/models"
     networks:
       - "llm_network"
     restart: unless-stopped
 
+  llm_redis:
+    container_name: llm_redis
+    image: docker.io/valkey/valkey:8-alpine
+    command: valkey-server --save 30 1 --loglevel warning
+    restart: unless-stopped
+    networks:
+      - "llm_network"
+    volumes:
+      - valkey-data:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+  searxng:
+    container_name: searxng
+    image: docker.io/searxng/searxng:latest
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      -  "8080:8080"
+    networks:
+      - "llm_network"
+    volumes:
+      - ${SEARXNG_CONFIGS}:/etc/searxng:rw
+      - searxng-data:/var/cache/searxng:rw
+    environment:
+      - SEARXNG_BASE_URL=https://searxng:8080/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+
 volumes:
   open-webui:
   ollama:
+  searxng-data:
+  valkey-data:
 
 networks:
   llm_network:
