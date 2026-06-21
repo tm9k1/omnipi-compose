@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+import hmac
 import os
 import signal
 import sys
@@ -37,7 +38,7 @@ def validate_configuration() -> bool:
 
 
 def authenticate(password: str) -> bool:
-    return password == PASSWORD
+    return bool(PASSWORD) and hmac.compare_digest(password, PASSWORD)
 
 
 class PasswordScreen(Screen):
@@ -275,7 +276,8 @@ async def show_goodbye() -> None:
 
 async def launch_magic_command() -> int:
     clear_terminal()
-    return os.system(MAGIC_COMMAND)
+    proc = await asyncio.create_subprocess_shell(MAGIC_COMMAND)
+    return await proc.wait()
 
 
 async def run_interface() -> str | None:
