@@ -22,7 +22,7 @@ services:
     container_name: "actual-helper"
     image: ghcr.io/tm9k1/actual-helper:latest
     user: "${PUID}:${PGID}"
-    hostname: "actual-server"
+    hostname: "actual-helper"
     env_file: .env
     environment:
       ACTUAL_DATA_DIR: /data
