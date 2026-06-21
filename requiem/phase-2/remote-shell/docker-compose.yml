@@ -13,9 +13,6 @@ services:
     env_file: .env
     volumes:
       - ${TTYD_SECRET_KEY}:/home/ubuntu/.ssh:ro     # Configuration and database files
-    networks:
-      - "global_docker_network"
-    restart: unless-stopped
     read_only: true
     cap_drop:
       - ALL
@@ -23,6 +20,10 @@ services:
       - no-new-privileges:true
     tmpfs:
       - /tmp
+    networks:
+      - "global_docker_network"
+    restart: unless-stopped
+
 networks:
   global_docker_network:
     external: "true"

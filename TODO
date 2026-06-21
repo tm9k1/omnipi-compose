@@ -1,0 +1,58 @@
+# Code Review Findings (requiem branch) — 2026-06-20
+
+## Critical / Security
+
+- [ ] **immich: Postgres + Redis exposed on all interfaces**
+      `requiem/phase-1/immich/docker-compose.yml`
+      Port changed from `${TAILSCALE_IP}:${PORT}:5432` to `${PORT}:5432` — now binds 0.0.0.0.
+      Restrict back to a specific IP or remove the host port mappings (services talk over docker network).
+
+- [ ] **remote-shell: password baked into image layer**
+      `requiem/phase-2/remote-shell/Dockerfile.ttyd`
+      `ARG REMOTE_SHELL_PASSWORD=supersecretpassword` + `ENV REMOTE_SHELL_PASSWORD=...` exposes the
+      credential in `docker history` / `docker inspect`. Inject at runtime via env_file instead.
+
+## High / Correctness
+
+- [ ] **excalidraw: DOCKEFILE typo breaks DOMAIN_NAME at build time**
+      `requiem/phase-1/creativity/docker-compose.yml`
+      Build arg `EXCALIDRAW_DOCKEFILE_DOMAIN_NAME` (missing 'R') silently passes empty string →
+      `PUB_SRV_NAME=draw.` and all VITE backend URLs broken. Fix typo to `EXCALIDRAW_DOCKERFILE_DOMAIN_NAME`.
+
+- [ ] **excalidraw-room: Node 12 EOL base image**
+      `requiem/phase-1/creativity/Dockerfile.excalidraw-room`
+      `FROM node:12-alpine` — EOL April 2022, unpatched CVEs, likely missing arm64/alpine manifest.
+      Upgrade to node:18-alpine or node:20-alpine.
+
+## Medium / Correctness & Security
+
+- [ ] **remote-shell: os.system() blocks asyncio event loop**
+      `requiem/phase-2/remote-shell/remote_shell.py` (launch_magic_command)
+      `os.system(MAGIC_COMMAND)` is synchronous — stalls the event loop for the whole session.
+      Replace with `asyncio.create_subprocess_shell()`.
+
+- [ ] **remote-shell: timing-vulnerable password comparison**
+      `requiem/phase-2/remote-shell/remote_shell.py` (authenticate)
+      `password == PASSWORD` leaks timing info. Use `hmac.compare_digest(password, PASSWORD)`.
+
+- [ ] **syncthing: LAN discovery port removed**
+      `requiem/phase-1/cloud/docker-compose.yml`
+      Port `21027/udp` removed — automatic local peer discovery no longer works.
+      Re-add if LAN discovery is needed, or document that static addresses are used instead.
+
+## Low
+
+- [ ] **remote-shell: TTYD_TMOUT build arg never consumed**
+      `requiem/phase-2/remote-shell/docker-compose.yml` + `Dockerfile.ttyd`
+      `TTYD_TMOUT` is passed as a build arg but `ARG TTYD_TMOUT` is missing in the Dockerfile.
+      Add the ARG declaration and wire it into the entrypoint to enforce idle timeout.
+
+- [ ] **remote-shell: read_only container may fail on Python __pycache__ writes**
+      `requiem/phase-2/remote-shell/docker-compose.yml`
+      `read_only: true` with only `/tmp` as tmpfs. Python silently skips bytecache on EROFS but
+      some textual dependencies may attempt writes at import time. Verify startup works in practice.
+
+- [ ] **Dockerfile.ttyd: multiple RUN apt install layers**
+      `requiem/phase-2/remote-shell/Dockerfile.ttyd`
+      4 separate `RUN apt install` calls inflate image size. Consolidate into one RUN layer.
+      Also: `ssh` is installed but unused — consider removing it to reduce attack surface.
